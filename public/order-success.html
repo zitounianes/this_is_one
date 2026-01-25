@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="تم إرسال طلبك بنجاح">
+    <meta name="theme-color" content="#f97316">
+    <title>تم الطلب بنجاح - مطعمي</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✅</text></svg>">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="index.html" class="logo">
+                    <span class="logo-icon rocket-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="currentColor">
+                           <path class="rocket-body" d="M12 2.5s-6 6.5-6 11c0 3 2.5 5.5 6 5.5s6-2.5 6-5.5c0-4.5-6-11-6-11z" fill="#E0E0E0"/>
+                           <path class="rocket-window" d="M12 9a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z" fill="#3B82F6"/>
+                           <path class="rocket-fins" d="M5.5 14L2 19h5l1-2.5M18.5 14L22 19h-5l-1-2.5" fill="#FF5722"/>
+                           <path class="rocket-fire" d="M12 20s-1.5 1.5-1.5 3 .5 1 1.5 1 1.5.5 1.5-1-1.5-3-1.5-3z" fill="#FFC107"/>
+                        </svg>
+                    </span>
+                    <span id="logoName"></span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Success Page -->
+    <main class="success-page-container">
+        <div class="success-bg-pattern"></div>
+        <div class="container relative-z">
+            <div class="success-header-section text-center fade-in">
+                <div class="success-icon-wrapper">
+                    <div class="success-icon">🎉</div>
+                    <div class="success-icon-ring"></div>
+                </div>
+                <h1 class="success-title">تم استلام طلبك بنجاح!</h1>
+                <p class="success-subtitle">شكراً لثقتك بنا! طلبك الآن في أيدٍ أمينة وسيصلك قريباً.</p>
+            </div>
+
+            <div class="success-grid fade-in fade-in-delay-1">
+                <!-- Right Column: Status & Actions -->
+                <div class="status-column">
+                    <!-- Order Number Banner -->
+                    <div class="order-number-banner">
+                        <span class="label">رقم الطلب</span>
+                        <h2 id="orderNumber" class="number">---</h2>
+                        <button class="btn-copy" onclick="copyOrderNumber()" title="نسخ الرقم">📋</button>
+                    </div>
+
+                    <!-- Status Tracker -->
+                    <div class="status-card-modern">
+                        <div class="card-header">
+                            <h3>📊 متابعة الطلب</h3>
+                            <span class="live-badge">مباشر 🔴</span>
+                        </div>
+                        <div class="order-status-vertical" id="orderStatusSteps">
+                            <!-- Steps will be richer here -->
+                            <div class="status-step active completed">
+                                <div class="step-line"></div>
+                                <div class="step-icon">📝</div>
+                                <div class="step-content">
+                                    <h4>تم استلام الطلب</h4>
+                                    <p>طلبك وصل للمطعم</p>
+                                </div>
+                                <div class="step-check">✓</div>
+                            </div>
+                            <div class="status-step active">
+                                <div class="step-line"></div>
+                                <div class="step-icon">👨‍🍳</div>
+                                <div class="step-content">
+                                    <h4>قيد التحضير</h4>
+                                    <p>يقوم الشيف بتجهيز وجبتك</p>
+                                </div>
+                                <div class="step-check">✓</div>
+                            </div>
+                            <div class="status-step">
+                                <div class="step-line"></div>
+                                <div class="step-icon">📦</div>
+                                <div class="step-content">
+                                    <h4>جاهز</h4>
+                                    <p>وجبتك جاهزة للتسليم</p>
+                                </div>
+                            </div>
+                            <div class="status-step" id="deliveryStep">
+                                <div class="step-line"></div>
+                                <div class="step-icon">🛵</div>
+                                <div class="step-content">
+                                    <h4>في الطريق</h4>
+                                    <p>المندوب في طريقه إليك</p>
+                                </div>
+                            </div>
+                            <div class="status-step">
+                                <div class="step-icon">🎉</div>
+                                <div class="step-content">
+                                    <h4>تم التسليم</h4>
+                                    <p>بالهناء والشفاء!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="actions-grid">
+                        <a href="my-orders.html" class="btn btn-primary btn-xl">
+                            📋 متابعة طلباتي
+                        </a>
+                        <a href="index.html" class="btn btn-secondary btn-xl">
+                            🍕 طلب آخر
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Left Column: Receipt Visual -->
+                <div class="receipt-column fade-in fade-in-delay-2">
+                    <div class="receipt-card">
+                        <div class="receipt-header">
+                            <div class="receipt-logo">🍔</div>
+                            <h3>فاتورة الطلب</h3>
+                            <div class="receipt-dots"></div>
+                        </div>
+                        <div id="orderDetails" class="receipt-body">
+                            <!-- JS creates structure -->
+                        </div>
+                        <div class="receipt-footer">
+                            <div class="receipt-barcode">
+                                ||| |||| || ||||| ||||
+                            </div>
+                            <p>احتفظ برقم الطلب للمراجعة</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="js/api-client.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/orders.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Ensure data is loaded
+            if (typeof initializeData === 'function') {
+                await initializeData();
+            }
+
+            const orderNumber = sessionStorage.getItem('lastOrderNumber');
+            const orderId = sessionStorage.getItem('lastOrderId');
+            
+            if (!orderNumber) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Display order number
+            document.getElementById('orderNumber').textContent = orderNumber;
+            
+            // Get order details
+            const order = getOrderByNumber(orderNumber);
+            if (order) {
+                renderOrderDetails(order);
+                updateStatusTracker(order.status);
+                
+                // Hide delivery step for dine-in orders
+                if (order.orderType !== 'delivery') {
+                    document.getElementById('deliveryStep').style.display = 'none';
+                }
+            }
+            
+            // Clear session storage (optional, maybe keep it a bit if they refresh)
+            // sessionStorage.removeItem('lastOrderNumber');
+        });
+        
+        function renderOrderDetails(order) {
+            const container = document.getElementById('orderDetails');
+            
+            container.innerHTML = `
+                <div class="order-item-row" style="border-bottom: 2px solid #f0f0f0; padding-bottom: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <strong>👤 ${order.customerName}</strong><br>
+                        <span style="color: #666; font-size: 0.9rem;">📱 ${order.customerPhone}</span>
+                    </div>
+                    <div style="text-align: left;">
+                        <span class="badge" style="background: #f0f0f0; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">
+                            ${order.orderType === 'delivery' ? '🛵 توصيل' : '🍽️ حضور'}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="items-list">
+                    ${order.items.map(item => `
+                        <div class="order-item-row">
+                            <span>${item.quantity}x ${item.name} ${item.sizeName ? `(${item.sizeName})` : ''}</span>
+                            <span>${formatPrice(item.price * item.quantity)}</span>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div style="margin-top: 1.5rem; border-top: 2px dashed #f0f0f0; padding-top: 1rem;">
+                    <div class="order-summary-row">
+                        <span>المجموع:</span>
+                        <span>${formatPrice(order.subtotal)}</span>
+                    </div>
+                    ${order.orderType === 'delivery' ? `
+                    <div class="order-summary-row">
+                        <span>التوصيل:</span>
+                        <span>${order.deliveryCost > 0 ? formatPrice(order.deliveryCost) : 'مجاني'}</span>
+                    </div>
+                    ` : ''}
+                    <div class="order-summary-total">
+                        <span>الإجمالي:</span>
+                        <span>${formatPrice(order.total)}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateStatusTracker(currentStatus) {
+            // Simplified logic for demo visuals
+            const steps = document.querySelectorAll('.status-step');
+            steps.forEach(step => {
+                step.classList.remove('active', 'completed');
+            });
+            
+            // Map status to index
+            // new -> 0, preparing -> 1, ready -> 2, delivery -> 3, delivered -> 4
+            let activeIndex = 0;
+            if (currentStatus === 'preparing') activeIndex = 1;
+            if (currentStatus === 'ready') activeIndex = 2;
+            if (currentStatus === 'delivery') activeIndex = 3;
+            if (currentStatus === 'delivered') activeIndex = 4;
+            
+            steps.forEach((step, index) => {
+                if (index < activeIndex) {
+                    step.classList.add('active', 'completed');
+                    // Add checkmark if missing
+                    if(!step.querySelector('.step-check')) {
+                        const check = document.createElement('div');
+                        check.className = 'step-check';
+                        check.textContent = '✓';
+                        step.appendChild(check);
+                    }
+                } else if (index === activeIndex) {
+                    step.classList.add('active');
+                }
+            });
+        }
+        
+        function copyOrderNumber() {
+            const orderNumber = document.getElementById('orderNumber').textContent;
+            copyToClipboard(orderNumber);
+        }
+    </script>
+
+    <style>
+        .success-page-container {
+            min-height: 100vh;
+            padding: 100px 0 60px;
+            background: #fffbf0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Festive Background Pattern */
+        .success-bg-pattern {
+            position: absolute;
+            inset: 0;
+            opacity: 0.4;
+            background-image: 
+                radial-gradient(#ff6b00 1px, transparent 1px),
+                radial-gradient(#ffb800 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+            z-index: 0;
+            mask-image: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0));
+            -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,0));
+        }
+
+        .relative-z { position: relative; z-index: 2; }
+
+        .success-header-section {
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .success-icon-wrapper {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .success-icon {
+            font-size: 4rem;
+            z-index: 2;
+            animation: popIcon 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .success-icon-ring {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 4px dashed #4caf50;
+            animation: spinSlow 10s linear infinite;
+        }
+
+        @keyframes popIcon {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes spinSlow { to { transform: rotate(360deg); } }
+
+        .success-title {
+            font-size: 2.8rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #1a1a1a 0%, #4a4a4a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        @media (max-width: 600px) {
+            .success-title { font-size: 2rem; }
+        }
+
+        .success-subtitle {
+            font-size: 1.15rem;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Grid Layout */
+        .success-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 2.5rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            align-items: start;
+        }
+
+        /* Order Number Banner */
+        .order-number-banner {
+            background: var(--gradient-fire);
+            border-radius: 20px;
+            padding: 1.5rem 2rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 25px rgba(255, 107, 0, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .order-number-banner::after {
+            content: '';
+            position: absolute;
+            top: -50%; right: -10%; width: 150px; height: 150px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+
+        .order-number-banner .label { font-size: 0.9rem; opacity: 0.9; }
+        .order-number-banner .number { font-family: 'Outfit', sans-serif; font-size: 2.2rem; margin: 0; font-weight: 800; letter-spacing: 2px; }
+        .btn-copy { 
+            background: rgba(255,255,255,0.2); 
+            border: none; 
+            width: 40px; height: 40px; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            color: white;
+            transition: 0.2s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .btn-copy:hover { background: white; color: var(--primary); }
+
+        /* Status Card */
+        .status-card-modern {
+            background: white;
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+            border: 1px solid rgba(0,0,0,0.04);
+            margin-bottom: 2rem;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .live-badge {
+            background: #ffebee;
+            color: #ef4444;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            animation: pulse-red 2s infinite;
+        }
+        @keyframes pulse-red { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+
+        /* Vertical Stepper */
+        .order-status-vertical {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            position: relative;
+        }
+
+        .status-step {
+            display: flex;
+            gap: 1.5rem;
+            padding-bottom: 2rem;
+            position: relative;
+            opacity: 0.5;
+            transition: 0.3s;
+        }
+        
+        .status-step.active { opacity: 1; }
+        .status-step:last-child { padding-bottom: 0; }
+
+        .step-icon {
+            width: 48px;
+            height: 48px;
+            background: #f9fafb;
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem;
+            z-index: 2;
+            border: 2px solid #e5e7eb;
+            flex-shrink: 0;
+        }
+
+        .status-step.active .step-icon {
+            background: white;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-glow);
+        }
+        
+        .status-step.completed .step-icon {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+            box-shadow: 0 4px 10px rgba(76, 175, 80, 0.2);
+        }
+
+        .step-line {
+            position: absolute;
+            top: 48px;
+            right: 24px; /* Align with icon center */
+            bottom: 0;
+            width: 2px;
+            background: #e5e7eb;
+            z-index: 1;
+        }
+        
+        .status-step:last-child .step-line { display: none; }
+        .status-step.completed .step-line { background: var(--success); }
+
+        .step-content h4 { margin: 0 0 0.25rem; font-size: 1rem; color: #1f2937; }
+        .step-content p { margin: 0; font-size: 0.85rem; color: #6b7280; }
+
+        .step-check {
+            margin-right: auto;
+            color: var(--success);
+            font-weight: 800;
+            font-size: 1.2rem;
+        }
+
+        /* Receipt Column */
+        .receipt-column {
+            display: block;
+        }
+        
+        .receipt-card {
+            background: white;
+            border-radius: 20px;
+            padding: 0;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 100px;
+            overflow: hidden;
+        }
+        
+        .receipt-header {
+            background: #1a1a1a;
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            position: relative;
+        }
+        
+        .receipt-logo { font-size: 2rem; margin-bottom: 0.5rem; }
+        .receipt-header h3 { color: white; margin: 0; font-size: 1.2rem; }
+        
+        .receipt-dots {
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            right: 0;
+            height: 16px;
+            background: radial-gradient(circle, transparent 50%, white 50%) top;
+            background-size: 16px 16px;
+            transform: rotate(180deg);
+        }
+
+        .receipt-body {
+            padding: 2rem 1.5rem;
+        }
+        
+        .order-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px dashed rgba(0,0,0,0.06);
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        .order-item-row:last-child { border-bottom: none; }
+        
+        .order-summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .order-summary-total {
+            font-weight: 800;
+            font-size: 1.4rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid rgba(0,0,0,0.05);
+            color: var(--text-dark);
+        }
+
+        .receipt-footer {
+            background: #f9fafb;
+            padding: 1rem;
+            text-align: center;
+            border-top: 2px dashed #e5e7eb;
+        }
+        
+        .receipt-barcode {
+            font-family: monospace; 
+            font-size: 1.5rem;
+            opacity: 0.5;
+            letter-spacing: 4px;
+            margin-bottom: 0.5rem;
+            font-weight: 900;
+        }
+
+        /* Buttons */
+        .actions-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .btn-xl { padding: 1rem; font-size: 1rem; border-radius: 16px; }
+        
+        .help-box-wrapper { margin-top: 2rem; text-align: center; }
+        .help-box { display: inline-block; background: white; padding: 10px 20px; border-radius: 50px; border: 1px solid #eee; font-size: 0.9rem; color: #9ca3af; }
+
+        @media (max-width: 850px) {
+            .success-grid { grid-template-columns: 1fr; }
+            .order-number-banner { flex-direction: column; text-align: center; gap: 0.5rem; }
+            .receipt-card { position: static; margin-top: 2rem; }
+        }
+    </style>
+</body>
+</html>

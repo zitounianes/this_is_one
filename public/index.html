@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="اطلب أشهى الوجبات من مطعمنا - توصيل سريع وطعم لا يُنسى">
+    <meta name="theme-color" content="#f97316">
+    <title id="pageTitle">اطلب الآن</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍽️</text></svg>">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header" id="mainHeader">
+        <div class="container">
+            <div class="header-content">
+                <a href="index.html" class="logo">
+                    <span class="logo-icon rocket-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="currentColor">
+                           <path class="rocket-body" d="M12 2.5s-6 6.5-6 11c0 3 2.5 5.5 6 5.5s6-2.5 6-5.5c0-4.5-6-11-6-11z" fill="#E0E0E0"/>
+                           <path class="rocket-window" d="M12 9a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z" fill="#3B82F6"/>
+                           <path class="rocket-fins" d="M5.5 14L2 19h5l1-2.5M18.5 14L22 19h-5l-1-2.5" fill="#FF5722"/>
+                           <path class="rocket-fire" d="M12 20s-1.5 1.5-1.5 3 .5 1 1.5 1 1.5.5 1.5-1-1.5-3-1.5-3z" fill="#FFC107"/>
+                        </svg>
+                    </span>
+                    <span id="logoName"></span>
+                </a>
+                
+                <div class="restaurant-status">
+                    <span class="status-dot"></span>
+                    <span></span>
+                </div>
+                
+                <div class="header-actions">
+                    <a href="my-orders.html" class="btn btn-secondary">
+                        📋 طلباتي
+                    </a>
+                    <a href="cart.html" class="cart-btn">
+                        <span>🛒</span>
+                        <span>السلة</span>
+                        <span class="cart-count"></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>🍕 <span>أشهى الوجبات</span> بين يديك</h1>
+                <p>اكتشف قائمتنا المميزة واطلب وجبتك المفضلة الآن. توصيل سريع وطعم لا يُقاوم!</p>
+                <a href="#meals" class="btn btn-primary btn-lg">
+                    تصفح القائمة ⬇️
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="categories">
+        <div class="container">
+            <div class="categories-scroll" id="categoriesContainer">
+                <!-- يتم ملؤها بواسطة JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Meals Section -->
+    <section class="meals-section" id="meals">
+        <div class="container">
+            <div class="section-header">
+                <h2>🍔 قائمة الطعام</h2>
+                <div class="search-container">
+                    <input type="text" id="searchInput" class="search-input" placeholder="ابحث عن وجبة...">
+                    <span class="search-icon">🔍</span>
+                </div>
+            </div>
+            
+            <div class="meals-grid" id="mealsContainer">
+                <!-- يتم ملؤها بواسطة JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>🍽️ <span id="footerName"></span></h4>
+                    <p>نقدم لكم أشهى الوجبات المحضرة بعناية من أجود المكونات الطازجة.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>روابط سريعة</h4>
+                    <ul class="footer-links">
+                        <li><a href="index.html">الرئيسية</a></li>
+                        <li><a href="cart.html">السلة</a></li>
+                        <li><a href="my-orders.html">طلباتي</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>تواصل معنا</h4>
+                    <ul class="footer-links">
+                        <li id="contactPhone">📞 0555 123 456</li>
+                        <li id="contactAddress">📍 الجزائر العاصمة</li>
+                        <!-- <li>⏰ 10:00 - 23:00</li> -->
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© <span id="currentYear"></span> <span id="copyrightName"></span> - جميع الحقوق محفوظة</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/api-client.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/orders.js"></script>
+    <script src="js/app.js"></script>
+    
+</body>
+</html>

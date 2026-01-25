@@ -1,0 +1,100 @@
+
+// (Keep top part same) ...
+model Order {
+  id             Int         @id @default(autoincrement())
+  customerName   String
+  customerPhone  String
+  customerAddress String?
+  location       String?     
+  total          Float
+  subtotal       Float       @default(0) // Added
+  deliveryCost   Float       @default(0) // Added
+  status         String      @default("pending")
+  orderType      String      @default("delivery") // Added
+  notes          String?     // Added
+  rating         Int?        // Added
+  review         String?     // Added
+  items          OrderItem[]
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
+// ... (Keep existing OrderItem and others) ...
+model OrderItem {
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  mealId    Int
+  mealName  String
+  quantity  Int
+  price     Float
+  size      String?
+}
+
+// ... Rest of models (Category, Meal, MealSize, Settings) must actally be included for valid schema
+// Since I'm overwriting, I must include EVERYTHING.
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String
+  icon      String
+  order     Int      @default(0)
+  active    Boolean  @default(true)
+  meals     Meal[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Meal {
+  id          Int       @id @default(autoincrement())
+  categoryId  Int
+  category    Category  @relation(fields: [categoryId], references: [id])
+  name        String
+  description String?
+  image       String?
+  price       Float
+  active      Boolean   @default(true)
+  popular     Boolean   @default(false)
+  order       Int       @default(0)
+  hasSizes    Boolean   @default(false)
+  sizes       MealSize[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model MealSize {
+  id     Int    @id @default(autoincrement())
+  mealId Int
+  meal   Meal   @relation(fields: [mealId], references: [id], onDelete: Cascade)
+  name   String
+  price  Float
+}
+
+model Settings {
+  id               Int     @id @default(1)
+  restaurantName   String  @default("مطعمي")
+  phone            String  @default("0555123456")
+  address          String  @default("الجزائر العاصمة")
+  currency         String  @default("دج")
+  isOpen           Boolean @default(true)
+  allowPreOrders   Boolean @default(true)
+  minPreOrderHours Int     @default(1)
+  maxPreOrderHours Int     @default(24)
+  openTime         String  @default("10:00")
+  closeTime        String  @default("23:00")
+  deliveryEnabled  Boolean @default(true)
+  deliveryType     String  @default("fixed")
+  deliveryFixedCost Float  @default(200)
+  deliveryFreeAbove Float  @default(2000)
+  deliveryCostPerKm Float  @default(50)
+  deliveryMaxDistance Float @default(15)
+  adminPassword    String  @default("admin123")
+}

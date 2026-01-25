@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="سلة مشترياتك - راجع طلبك قبل الإرسال">
+    <meta name="theme-color" content="#f97316">
+    <title id="pageTitle">السلة</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛒</text></svg>">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="index.html" class="logo">
+                    <span class="logo-icon rocket-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="currentColor">
+                           <path class="rocket-body" d="M12 2.5s-6 6.5-6 11c0 3 2.5 5.5 6 5.5s6-2.5 6-5.5c0-4.5-6-11-6-11z" fill="#E0E0E0"/>
+                           <path class="rocket-window" d="M12 9a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z" fill="#3B82F6"/>
+                           <path class="rocket-fins" d="M5.5 14L2 19h5l1-2.5M18.5 14L22 19h-5l-1-2.5" fill="#FF5722"/>
+                           <path class="rocket-fire" d="M12 20s-1.5 1.5-1.5 3 .5 1 1.5 1 1.5.5 1.5-1-1.5-3-1.5-3z" fill="#FFC107"/>
+                        </svg>
+                    </span>
+                    <span id="logoName"></span>
+                </a>
+                
+                <div class="header-actions">
+                    <a href="index.html" class="btn btn-secondary">
+                        ← العودة للقائمة
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Cart Page -->
+    <main class="cart-page">
+        <div class="container">
+            <h1 class="fade-in mb-3">🛒 سلة الطلب</h1>
+            
+            <!-- Empty Cart -->
+            <div class="cart-empty fade-in fade-in-delay-1" id="cartEmpty" style="display: none;">
+                <div class="cart-empty-icon">🛒</div>
+                <h2>السلة فارغة</h2>
+                <p>لم تضف أي وجبات بعد. تصفح القائمة واختر وجباتك المفضلة!</p>
+                <a href="index.html" class="btn btn-primary btn-lg mt-3">
+                    تصفح القائمة 🍔
+                </a>
+            </div>
+            
+            <!-- Cart Content -->
+            <div class="cart-content" style="display: none;">
+                <div class="cart-grid">
+                    <!-- Cart Items -->
+                    <div>
+                        <div class="cart-items" id="cartItems">
+                            <!-- يتم ملؤها بواسطة JavaScript -->
+                        </div>
+                        
+                        <div class="mt-3" style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                            <a href="index.html" class="btn btn-secondary">
+                                ← أضف المزيد
+                            </a>
+                            <button class="btn btn-danger" onclick="handleClearCart()">
+                                🗑️ تفريغ السلة
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Cart Summary -->
+                    <div class="cart-summary">
+                        <h3 class="mb-3">📝 ملخص الطلب</h3>
+                        
+                        <div class="summary-row">
+                            <span>المجموع الفرعي</span>
+                            <span id="cartSubtotal">0 دج</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>التوصيل</span>
+                            <span id="cartDelivery">غير محدد</span>
+                        </div>
+                        <div class="summary-row">
+                            <span style="font-weight: 700;">الإجمالي</span>
+                            <span class="summary-total" id="cartTotal">0 دج</span>
+                        </div>
+                        
+                        <a href="checkout.html" class="btn btn-primary btn-lg btn-block mt-3" id="checkoutBtn">
+                            إتمام الطلب ←
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>© 2026 مطعمي - جميع الحقوق محفوظة</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/api-client.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/cart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+             // Load app data including settings
+            if (typeof initializeApp === 'function') {
+                initializeApp();
+            } else if (typeof loadRestaurantSettings === 'function') {
+                loadRestaurantSettings();
+            }
+        });
+    </script>
+    <script src="js/orders.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Render immediately with cached data to avoid flash
+            renderCart();
+            
+            // Wait for settings to load (then re-render)
+            if (typeof initializeData === 'function') {
+                await initializeData();
+                renderCart();
+            }
+            
+            // Listen for any updates
+            document.addEventListener('data-ready', () => {
+                renderCart();
+            });
+        });
+        
+        async function handleClearCart() {
+            const confirmed = await confirmAction('هل أنت متأكد من تفريغ السلة؟');
+            if (confirmed) {
+                clearCart();
+                showToast('تم تفريغ السلة', 'success');
+            }
+        }
+    </script>
+    
+
+</body>
+</html>

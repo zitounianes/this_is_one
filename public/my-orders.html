@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="تتبع طلباتك السابقة">
+    <meta name="theme-color" content="#f97316">
+    <title id="pageTitle">طلباتي</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📋</text></svg>">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="index.html" class="logo">
+                    <span class="logo-icon rocket-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="currentColor">
+                           <path class="rocket-body" d="M12 2.5s-6 6.5-6 11c0 3 2.5 5.5 6 5.5s6-2.5 6-5.5c0-4.5-6-11-6-11z" fill="#E0E0E0"/>
+                           <path class="rocket-window" d="M12 9a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z" fill="#3B82F6"/>
+                           <path class="rocket-fins" d="M5.5 14L2 19h5l1-2.5M18.5 14L22 19h-5l-1-2.5" fill="#FF5722"/>
+                           <path class="rocket-fire" d="M12 20s-1.5 1.5-1.5 3 .5 1 1.5 1 1.5.5 1.5-1-1.5-3-1.5-3z" fill="#FFC107"/>
+                        </svg>
+                    </span>
+                    <span id="logoName"></span>
+                </a>
+                
+                <div class="header-actions">
+                    <a href="index.html" class="btn btn-secondary">
+                        ← العودة للقائمة
+                    </a>
+                    <a href="cart.html" class="cart-btn">
+                        <span>🛒</span>
+                        <span>السلة</span>
+                        <span class="cart-count" style="display: none;">0</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- My Orders Page -->
+    <main class="cart-page">
+        <div class="container">
+            <h1 class="fade-in mb-3">📋 طلباتي</h1>
+            
+            <!-- Phone Search -->
+            <div id="phoneSearch" class="fade-in fade-in-delay-1" style="margin: 0 auto 2rem;">
+                <div class="phone-search-card">
+                    <div class="phone-search-icon">📱</div>
+                    <h3 class="mb-2">أدخل رقم هاتفك</h3>
+                    <p class="text-muted mb-3">لعرض طلباتك السابقة</p>
+                    
+                    <form onsubmit="searchOrders(event)">
+                        <div class="form-group">
+                            <input type="tel" class="form-input" id="searchPhone" required
+                                   placeholder="05XX XXX XXX" pattern="0[5-7][0-9]{8}"
+                                   style="text-align: center; font-size: 1.25rem; direction: ltr;">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg btn-block">
+                            🔍 عرض الطلبات
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Orders List -->
+            <div id="ordersSection" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                    <h2 id="ordersTitle">طلباتك</h2>
+                    <button class="btn btn-secondary" onclick="showPhoneSearch()">
+                        🔄 تغيير الرقم
+                    </button>
+                </div>
+                
+                <div id="ordersList" class="orders-list">
+                    <!-- Orders will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Confirm Cancel Modal -->
+    <div class="modal-overlay" id="confirmCancelModal">
+        <div class="modal" style="max-width: 400px;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #e74c3c, #c0392b); border-radius: 16px 16px 0 0;">
+                <h3 class="modal-title" style="color: white;">⚠️ تأكيد الإلغاء</h3>
+                <button class="modal-close" onclick="closeConfirmModal()" style="color: white;">✕</button>
+            </div>
+            <div class="modal-body" style="text-align: center; padding: 2rem;">
+                <div style="font-size: 4rem; margin-bottom: 1rem;">🗑️</div>
+                <p style="font-size: 1.1rem; color: var(--text-primary); margin-bottom: 0.5rem;">هل أنت متأكد من إلغاء هذا الطلب؟</p>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">لا يمكن التراجع عن هذا الإجراء</p>
+            </div>
+            <div class="modal-footer" style="display: flex; gap: 1rem; justify-content: center; padding: 1.5rem;">
+                <button class="btn btn-secondary" onclick="closeConfirmModal()" style="flex: 1; padding: 0.875rem;">
+                    ↩️ تراجع
+                </button>
+                <button class="btn btn-danger" id="confirmCancelBtn" style="flex: 1; padding: 0.875rem; background: linear-gradient(135deg, #e74c3c, #c0392b);">
+                    ✓ نعم، إلغاء الطلب
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rating Modal -->
+    <div class="modal-overlay" id="ratingModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">⭐ قيّم طلبك</h3>
+                <button class="modal-close" onclick="closeRatingModal()">✕</button>
+            </div>
+            <div class="modal-body" style="text-align: center;">
+                <p style="margin-bottom: 1.5rem;">كيف كانت تجربتك مع هذا الطلب؟</p>
+                
+                <div class="stars-rating" id="starsContainer" style="justify-content: center; margin-bottom: 2rem;">
+                    <span class="star" data-rating="1" onclick="selectRating(1)">★</span>
+                    <span class="star" data-rating="2" onclick="selectRating(2)">★</span>
+                    <span class="star" data-rating="3" onclick="selectRating(3)">★</span>
+                    <span class="star" data-rating="4" onclick="selectRating(4)">★</span>
+                    <span class="star" data-rating="5" onclick="selectRating(5)">★</span>
+                </div>
+                
+                <div class="form-group">
+                    <textarea class="form-textarea" id="reviewText" rows="3"
+                              placeholder="اكتب تعليقك (اختياري)..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeRatingModal()">إلغاء</button>
+                <button class="btn btn-primary" onclick="submitRating()">إرسال التقييم</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Details Modal -->
+    <div class="modal-overlay" id="detailsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">تفاصيل الطلب</h3>
+                <button class="modal-close" onclick="closeDetailsModal()">✕</button>
+            </div>
+            <div class="modal-body" id="detailsModalBody">
+                <!-- Content injected by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/api-client.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/orders.js"></script>
+    <script>
+        let currentOrderId = null;
+        let selectedRating = 0;
+        let currentPhone = '';
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load app data including settings
+            if (typeof initializeApp === 'function') {
+                initializeApp();
+            } else if (typeof loadRestaurantSettings === 'function') {
+                loadRestaurantSettings();
+            }
+            
+            updateCartUI();
+            
+            // Check if phone was saved
+            const savedPhone = localStorage.getItem('customerPhone');
+            if (savedPhone) {
+                document.getElementById('searchPhone').value = savedPhone;
+            }
+        });
+        
+        function searchOrders(e) {
+            e.preventDefault();
+            
+            const phone = document.getElementById('searchPhone').value.trim();
+            
+            if (!validatePhone(phone)) {
+                showToast('رقم الهاتف غير صحيح', 'error');
+                return;
+            }
+            
+            currentPhone = phone;
+            localStorage.setItem('customerPhone', phone);
+            
+            const orders = getCustomerOrders(phone);
+            
+            if (orders.length === 0) {
+                showToast('لا توجد طلبات لهذا الرقم', 'info');
+                return;
+            }
+            
+            document.getElementById('phoneSearch').style.display = 'none';
+            document.getElementById('ordersSection').style.display = 'block';
+            document.getElementById('ordersTitle').textContent = `طلباتك (${orders.length})`;
+            
+            renderOrders(orders);
+        }
+        
+        function showPhoneSearch() {
+            document.getElementById('phoneSearch').style.display = 'block';
+            document.getElementById('ordersSection').style.display = 'none';
+        }
+        
+        function renderOrders(orders) {
+            const container = document.getElementById('ordersList');
+            
+            container.innerHTML = orders.map((order, index) => {
+                const itemsCount = order.items.reduce((sum, i) => sum + i.quantity, 0);
+
+                return `
+                <div class="order-card fade-in" style="animation-delay: ${index * 0.1}s;">
+                    <div class="order-card-header">
+                        <div>
+                            <h3 class="order-number">${order.orderNumber}</h3>
+                            <span class="order-date">${formatDateTime(order.createdAt)}</span>
+                        </div>
+                        <span class="order-status-badge" style="background: ${getStatusColor(order.status)}15; color: ${getStatusColor(order.status)}; border: 1px solid ${getStatusColor(order.status)}40;">
+                            ${getStatusText(order.status)}
+                        </span>
+                    </div>
+                    
+                    <div class="order-card-body">
+                        <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">
+                            ${order.orderType === 'delivery' ? '🛵 توصيل' : '🍽️ حضور'}
+                            ${order.address ? ` - ${order.address.substring(0, 50)}...` : ''}
+                        </p>
+                        
+                         <!-- Count Display Only -->
+                        <div style="font-weight: 600; color: var(--text-primary); display: flex; align-items: center; justify-content: space-between;">
+                            <span>📦 عدد المنتجات: ${itemsCount}</span>
+                            <button class="btn btn-sm btn-secondary" onclick="openDetailsModal('${order.id}')" style="padding: 4px 12px; font-size: 0.85rem;">
+                                👁️ التفاصيل
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="order-card-footer">
+                        <div class="order-total">${formatPrice(order.total)}</div>
+                        
+                        <div class="order-actions">
+                            ${order.status === 'delivered' && !order.rating ? `
+                                <button class="btn btn-secondary" onclick="openRatingModal('${order.id}')">
+                                    ⭐ قيّم
+                                </button>
+                            ` : ''}
+                            ${order.rating ? `
+                                <span style="color: var(--gold);">${'★'.repeat(order.rating)}${'☆'.repeat(5 - order.rating)}</span>
+                            ` : ''}
+                            ${order.status === 'new' ? `
+                                <button class="btn btn-danger" onclick="handleCancelOrder('${order.id}')">
+                                    ❌ إلغاء
+                                </button>
+                            ` : ''}
+
+                        </div>
+                    </div>
+                </div>
+            `}).join('');
+        }
+        
+        let pendingCancelOrderId = null;
+        
+        function handleCancelOrder(orderId) {
+            pendingCancelOrderId = orderId;
+            document.getElementById('confirmCancelModal').classList.add('active');
+        }
+        
+        function closeConfirmModal() {
+            document.getElementById('confirmCancelModal').classList.remove('active');
+            pendingCancelOrderId = null;
+        }
+        
+        function confirmCancelOrder() {
+            if (pendingCancelOrderId) {
+                const result = cancelOrder(pendingCancelOrderId);
+                if (result) {
+                    showToast('تم إلغاء الطلب بنجاح', 'success');
+                    const orders = getCustomerOrders(currentPhone);
+                    renderOrders(orders);
+                }
+                closeConfirmModal();
+            }
+        }
+        
+        // ربط زر التأكيد
+        document.addEventListener('DOMContentLoaded', () => {
+            const confirmBtn = document.getElementById('confirmCancelBtn');
+            if (confirmBtn) {
+                confirmBtn.addEventListener('click', confirmCancelOrder);
+            }
+        });
+
+        
+        function openRatingModal(orderId) {
+            currentOrderId = orderId;
+            selectedRating = 0;
+            document.querySelectorAll('.star').forEach(star => star.classList.remove('active'));
+            document.getElementById('reviewText').value = '';
+            document.getElementById('ratingModal').classList.add('active');
+        }
+        
+        function closeRatingModal() {
+            document.getElementById('ratingModal').classList.remove('active');
+            currentOrderId = null;
+        }
+        
+        function selectRating(rating) {
+            selectedRating = rating;
+            document.querySelectorAll('.star').forEach(star => {
+                const starRating = parseInt(star.dataset.rating);
+                star.classList.toggle('active', starRating <= rating);
+            });
+        }
+        
+        async function submitRating() {
+            if (selectedRating === 0) {
+                showToast('الرجاء اختيار تقييم', 'warning');
+                return;
+            }
+            
+            const review = document.getElementById('reviewText').value.trim();
+            const btn = document.querySelector('#ratingModal .btn-primary');
+            const originalText = btn.textContent;
+            btn.textContent = 'جاري الإرسال...';
+            btn.disabled = true;
+            
+            try {
+                const success = await rateOrder(currentOrderId, selectedRating, review);
+                if (success) {
+                    closeRatingModal();
+                    // تحديث القائمة لإخفاء زر التقييم
+                    const orders = getCustomerOrders(currentPhone);
+                    renderOrders(orders);
+                } else {
+                    showToast('حدث خطأ أثناء إرسال التقييم', 'error');
+                }
+            } catch (e) {
+                console.error(e);
+                showToast('حدث خطأ غير متوقع', 'error');
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        }
+        
+        function openDetailsModal(orderId) {
+            const orders = getCustomerOrders(currentPhone);
+            const order = orders.find(o => o.id == orderId);
+            
+            if (!order) return;
+            
+            const modalBody = document.getElementById('detailsModalBody');
+            
+            const itemsHtml = order.items.map(item => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee;">
+                    <div>
+                        <span style="font-weight: bold;">${item.quantity}x</span> ${item.name}
+                        ${item.sizeName ? `<div style="font-size: 0.85rem; color: gray;">${item.sizeName}</div>` : ''}
+                    </div>
+                    <div style="font-weight: bold;">${formatPrice(item.price * item.quantity)}</div>
+                </div>
+            `).join('');
+            
+            modalBody.innerHTML = `
+                <div style="text-align: right;">
+                    ${itemsHtml}
+                    <div style="margin-top: 15px; padding-top: 15px; border-top: 2px solid #eee; display: flex; justify-content: space-between; font-weight: 900; font-size: 1.1rem;">
+                        <span>الإجمالي</span>
+                        <span>${formatPrice(order.total)}</span>
+                    </div>
+                    ${order.notes ? `<div style="margin-top: 10px; background: #fff3cd; padding: 10px; border-radius: 8px; font-size: 0.9rem;">📝 ملاحظات: ${order.notes}</div>` : ''}
+                </div>
+            `;
+            
+            document.getElementById('detailsModal').classList.add('active');
+        }
+        
+        function closeDetailsModal() {
+            document.getElementById('detailsModal').classList.remove('active');
+        }
+    </script>
+    
+
+</body>
+</html>
