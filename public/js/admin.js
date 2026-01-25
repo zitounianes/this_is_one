@@ -1462,65 +1462,32 @@ const imageInput = document.getElementById('mealImageInput');
 const cropModal = document.getElementById('cropModal');
 const cropImage = document.getElementById('cropImage');
 
-if (imageInput) {
-    imageInput.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            // Validate minimum dimensions first
-            const img = new Image();
-            img.src = URL.createObjectURL(file);
-            img.onload = function() {
-                if (img.naturalWidth < 800 || img.naturalHeight < 800) {
-                    showToast('❌ جودة الصورة ضعيفة جداً. يرجى استخدام صورة بدقة 800×800 بكسل على الأقل لضمان وضوحها.', 'error');
-                    imageInput.value = ''; // Reset input
-                    URL.revokeObjectURL(img.src);
-                    return;
-                }
-                
-                // If valid, open Cropper
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    // Initialize cropper modal
-                    cropImage.src = e.target.result;
-                    document.getElementById('cropModal').classList.add('active');
-                    
-                    if (cropper) {
-                        cropper.destroy();
-                    }
-                    
-                    cropper = new Cropper(cropImage, {
-                        // Strict Rule #1: 1:1 Aspect Ratio
-                        aspectRatio: 1, 
-                        
-                        // Strict Rule #2: Hard Cropping Logic
-                        viewMode: 1,            // Restrict crop box to not exceed canvas
-                        dragMode: 'move',       // Move image behind fixed box
-                        autoCropArea: 1,        // Fill available area
-                        restore: false,
-                        
-                        // Strict Rule #4: Safe Zone Guidance (Visuals mostly, center by default)
-                        center: true,
-                        guides: true,
-                        highlight: false,
-                        background: false,      // No checkerboard, clean look
-                        
-                        // Lock the crop box! User moves THE IMAGE, not the box
-                        cropBoxMovable: false,
-                        cropBoxResizable: false,
-                        toggleDragModeOnDblclick: false,
-                        
-                        ready: function() {
-                            // Extra enforcement to ensure full coverage if image is small relative to container
-                            // (Though viewMode: 1 handles most of this)
-                        }
-                    });
-                };
-                reader.readAsDataURL(file);
-                URL.revokeObjectURL(img.src);
-            };
-        }
+// Helper to init cropper
+function initCropperInstance(imageSrc) {
+    cropImage.src = imageSrc;
+    cropModal.classList.add('active');
+    
+    if (cropper) {
+        cropper.destroy();
+    }
+    
+    cropper = new Cropper(cropImage, {
+        aspectRatio: NaN,      // FREE CROPPING
+        viewMode: 1,           // Restrict crop box to canvas
+        dragMode: 'crop',      // User draws crop box
+        autoCropArea: 1,       // Start with full images selection
+        restore: false,
+        guides: false,         // Clean look (remove small grid)
+        center: true,
+        highlight: true,
+        cropBoxMovable: true,
+        cropBoxResizable: true,
+        toggleDragModeOnDblclick: false,
+        responsive: true,
+        background: false,     // Clean background
     });
 }
+
 
 function closeCropModal() {
     document.getElementById('cropModal').classList.remove('active');
@@ -1535,9 +1502,8 @@ function cropAndSave() {
     if (!cropper) return;
     
     // Get cropped canvas - Forced to 800x800
+    // Get cropped canvas - Natural size (avoid stretching)
     const canvas = cropper.getCroppedCanvas({
-        width: 800,
-        height: 800,
         imageSmoothingEnabled: true,
         imageSmoothingQuality: 'high'
     });
@@ -1995,102 +1961,10 @@ function changePassword() {
 // =====================================================
 
 function openCropperModal(imageSrc) {
-    const cropperModal = document.getElementById('cropperModal');
-    const cropperImage = document.getElementById('cropperImage');
-    
-    // Set image source
-    cropperImage.src = imageSrc;
-    
-    // Show modal
-    cropperModal.classList.add('active');
-    
-    // Initialize Cropper after image loads
-    cropperImage.onload = function() {
-        // Destroy existing instance if any
-        if (cropperInstance) {
-            cropperInstance.destroy();
-        }
-        
-        // Create new Cropper instance
-        cropperInstance = new Cropper(cropperImage, {
-            aspectRatio: 16 / 10, // Good ratio for meal cards
-            viewMode: 2,
-            dragMode: 'move',
-            autoCropArea: 0.9,
-            restore: false,
-            guides: true,
-            center: true,
-            highlight: true,
-            cropBoxMovable: true,
-            cropBoxResizable: true,
-            toggleDragModeOnDblclick: false,
-            responsive: true,
-            background: true,
-        });
-    };
+    initCropperInstance(imageSrc);
 }
 
-function closeCropperModal() {
-    const cropperModal = document.getElementById('cropperModal');
-    cropperModal.classList.remove('active');
-    
-    // Destroy cropper instance
-    if (cropperInstance) {
-        cropperInstance.destroy();
-        cropperInstance = null;
-    }
-    
-    // Clear file input
-    document.getElementById('mealImageInput').value = '';
-}
+// closeCropperModal is handled by closeCropModal (line 1525)
+// cropAndSave handles applyCrop logic
+// editExistingImage uses openCropperModal
 
-function applyCrop() {
-    if (!cropperInstance) {
-        showToast('حدث خطأ في قص الصورة', 'error');
-        return;
-    }
-    
-    // Get cropped canvas
-    const croppedCanvas = cropperInstance.getCroppedCanvas({
-        width: 800,  // Max width for performance
-        height: 500, // Max height
-        imageSmoothingEnabled: true,
-        imageSmoothingQuality: 'high',
-    });
-    
-    if (croppedCanvas) {
-        // Convert to base64
-        const croppedImage = croppedCanvas.toDataURL('image/jpeg', 0.9);
-        
-        // Update preview
-        const preview = document.getElementById('mealImagePreview');
-        const img = preview.querySelector('img');
-        img.src = croppedImage;
-        preview.style.display = 'flex';
-        
-        // Close modal
-        closeCropperModal();
-        
-        showToast('تم قص الصورة بنجاح', 'success');
-    }
-}
-
-function rotateCropperImage(degree) {
-    if (cropperInstance) {
-        cropperInstance.rotate(degree);
-    }
-}
-
-function resetCropper() {
-    if (cropperInstance) {
-        cropperInstance.reset();
-    }
-}
-
-function editExistingImage() {
-    const preview = document.getElementById('mealImagePreview');
-    const img = preview.querySelector('img');
-    if (img.src && img.src !== '') {
-        openCropperModal(img.src);
-    }
-}
