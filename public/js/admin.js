@@ -1385,82 +1385,104 @@ function closeMealModal() {
 async function saveMeal(event) {
     event.preventDefault();
     
-    const id = document.getElementById('mealId').value;
-    const name = document.getElementById('mealName').value;
-    const description = document.getElementById('mealDescription').value;
-    const categoryId = parseInt(document.getElementById('mealCategory').value);
-    const hasSizes = document.getElementById('mealHasSizes').checked;
-    
-    // Get price or sizes
-    let price = 0;
-    let sizes = [];
-    
-    if (hasSizes) {
-        sizes = getSizesFromForm();
-        if (sizes.length === 0) {
-            showToast('يرجى إضافة حجم واحد على الأقل', 'error');
-            return;
+    try {
+        const id = document.getElementById('mealId').value;
+        const name = document.getElementById('mealName').value;
+        const description = document.getElementById('mealDescription').value;
+        const categoryId = parseInt(document.getElementById('mealCategory').value);
+        const hasSizes = document.getElementById('mealHasSizes').checked;
+        
+        if (isNaN(categoryId)) {
+             showToast('يرجى اختيار القسم', 'error');
+             return;
         }
-        price = Math.min(...sizes.map(s => s.price));
-    } else {
-        price = parseFloat(document.getElementById('mealPrice').value) || 0;
-        if (price <= 0) {
-            showToast('يرجى إدخال سعر صحيح', 'error');
-            return;
+
+        // Get price or sizes
+        let price = 0;
+        let sizes = [];
+        
+        if (hasSizes) {
+            sizes = getSizesFromForm();
+            if (sizes.length === 0) {
+                showToast('يرجى إضافة حجم واحد على الأقل', 'error');
+                return;
+            }
+            price = Math.min(...sizes.map(s => s.price));
+        } else {
+            price = parseFloat(document.getElementById('mealPrice').value) || 0;
+            if (price <= 0) {
+                showToast('يرجى إدخال سعر صحيح', 'error');
+                return;
+            }
         }
+        
+        
+        // Image handling from cropper
+        let image = '';
+        const preview = document.getElementById('mealImagePreview');
+        if (preview.style.display !== 'none') {
+            image = preview.querySelector('img').src;
+        }
+        
+        // Check if we have cropped data from hidden input
+        const croppedData = document.getElementById('croppedImageData');
+        if (croppedData && croppedData.value) {
+            image = croppedData.value;
+        }
+        
+        // Use Helpers
+        // Convert empty string to null for database cleanliness
+        const mealData = {
+            name, price, description, categoryId, 
+            image: image || null, 
+            hasSizes, sizes,
+            active: true
+        };
+        
+        if (id) {
+            // Update
+            // Keep existing non-form fields (like active, popular, order)
+            const existing = getMeals().find(m => m.id == id);
+            await updateMealData({ ...existing, ...mealData, id: parseInt(id) });
+            showToast('تم تحديث الوجبة بنجاح', 'success');
+        } else {
+            // Create
+            await createMealData({
+                ...mealData,
+                popular: false,
+                order: getMeals().length + 1
+            });
+            showToast('تم إضافة الوجبة بنجاح', 'success');
+        }
+        
+        closeMealModal();
+        renderMeals();
+    } catch (e) {
+        console.error("Save Meal Error:", e);
+        showToast('حدث خطأ أثناء حفظ الوجبة: ' + e.message, 'error');
     }
-    
-    
-    // Image handling from cropper
-    let image = '';
-    const preview = document.getElementById('mealImagePreview');
-    if (preview.style.display !== 'none') {
-        image = preview.querySelector('img').src;
-    }
-    
-    // Check if we have cropped data from hidden input
-    const croppedData = document.getElementById('croppedImageData');
-    if (croppedData && croppedData.value) {
-        image = croppedData.value;
-    }
-    
-    // Use Helpers
-    // Convert empty string to null for database cleanliness
-    const mealData = {
-        name, price, description, categoryId, 
-        image: image || null, 
-        hasSizes, sizes,
-        active: true
-    };
-    
-    if (id) {
-        // Update
-        // Keep existing non-form fields (like active, popular, order)
-        const existing = getMeals().find(m => m.id == id);
-        await updateMealData({ ...existing, ...mealData, id: parseInt(id) });
-        showToast('تم تحديث الوجبة بنجاح', 'success');
-    } else {
-        // Create
-        await createMealData({
-            ...mealData,
-            popular: false,
-            order: getMeals().length + 1
-        });
-        showToast('تم إضافة الوجبة بنجاح', 'success');
-    }
-    
-    closeMealModal();
-    renderMeals();
 }
 
 // =====================================================
 // IMAGE CROPPER LOGIC
 // =====================================================
 
-let cropper;
-const imageInput = document.getElementById('mealImageInput');
 const cropModal = document.getElementById('cropModal');
 const cropImage = document.getElementById('cropImage');
+const imageInput = document.getElementById('mealImageInput'); // Re-declare locally or ensure global
+
+if (imageInput) {
+    imageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+             const reader = new FileReader();
+             reader.onload = function(e) {
+                 initCropperInstance(e.target.result);
+             };
+             reader.readAsDataURL(file);
+        }
+    });
+}
 
 // Helper to init cropper
 function initCropperInstance(imageSrc) {
