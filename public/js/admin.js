@@ -1633,12 +1633,8 @@ function cropAndSave() {
         imageSmoothingQuality: 'high'
     });
     
-// Helper to copy text to clipboard
-function copyAddressToClipboard(text) {
-    if (!text) return;
-    navigator.clipboard.writeText(text).then(() => showToast('تم نسخ العنوان', 'success'))
-    .catch(() => showToast('فشل النسخ', 'error'));
-}
+    // Export as WebP for performance
+    const croppedDataUrl = canvas.toDataURL('image/webp', 0.85);
     
     // Show preview
     const preview = document.getElementById('mealImagePreview');
@@ -2096,4 +2092,11 @@ function openCropperModal(imageSrc) {
 // closeCropperModal is handled by closeCropModal (line 1525)
 // cropAndSave handles applyCrop logic
 // editExistingImage uses openCropperModal
+
+// Helper to copy text to clipboard
+function copyAddressToClipboard(text) {
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(() => showToast('تم نسخ العنوان', 'success'))
+    .catch(() => showToast('فشل النسخ', 'error'));
+}
 
