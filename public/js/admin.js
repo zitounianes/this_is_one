@@ -1490,40 +1490,87 @@ if (imageInput) {
     imageInput.addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
-             const reader = new FileReader();
-             reader.onload = function(e) {
-                 initCropperInstance(e.target.result);
-             };
-             reader.readAsDataURL(file);
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                // Direct Resize & process without cropping modal
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    
+                    // Resize logic (Max 1000px)
+                    const MAX_SIZE = 1000;
+                    if (width > height) {
+                        if (width > MAX_SIZE) {
+                            height *= MAX_SIZE / width;
+                            width = MAX_SIZE;
+                        }
+                    } else {
+                        if (height > MAX_SIZE) {
+                            width *= MAX_SIZE / height;
+                            height = MAX_SIZE;
+                        }
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // Export
+                    const dataUrl = canvas.toDataURL('image/webp', 0.85);
+                    
+                    // Update Preview
+                    const preview = document.getElementById('mealImagePreview');
+                    preview.querySelector('img').src = dataUrl;
+                    preview.style.display = 'flex';
+                    
+                    // Store in hidden input
+                    let hiddenInput = document.getElementById('croppedImageData');
+                    if (!hiddenInput) {
+                        hiddenInput = document.createElement('input');
+                        hiddenInput.type = 'hidden';
+                        hiddenInput.id = 'croppedImageData';
+                        document.getElementById('mealForm').appendChild(hiddenInput);
+                    }
+                    hiddenInput.value = dataUrl;
+                    
+                    // Hide Upload Label
+                    const uploadLabel = document.querySelector('label[for="mealImageInput"]');
+                    if(uploadLabel) uploadLabel.style.display = 'none';
+
+                    // Add Delete Button Logic if not exists
+                     if (!preview.querySelector('.btn-delete-image')) {
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.className = 'btn-delete-image';
+                        deleteBtn.innerHTML = '🗑️ حذف الصورة';
+                        deleteBtn.type = 'button';
+                        deleteBtn.onclick = function(e) {
+                            e.stopPropagation(); 
+                            if(confirm('هل أنت متأكد من حذف الصورة؟')) {
+                                preview.querySelector('img').src = '';
+                                preview.style.display = 'none';
+                                const uploadLabel = document.querySelector('label[for="mealImageInput"]');
+                                if(uploadLabel) uploadLabel.style.display = 'flex'; 
+                                document.getElementById('mealImageInput').value = '';
+                                const hidden = document.getElementById('croppedImageData');
+                                if(hidden) hidden.value = '';
+                            }
+                        };
+                        preview.appendChild(deleteBtn);
+                        preview.style.position = 'relative';
+                    }
+                }
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
         }
     });
 }
 
-// Helper to init cropper
-function initCropperInstance(imageSrc) {
-    cropImage.src = imageSrc;
-    cropModal.classList.add('active');
-    
-    if (cropper) {
-        cropper.destroy();
-    }
-    
-    cropper = new Cropper(cropImage, {
-        aspectRatio: NaN,      // FREE CROPPING
-        viewMode: 1,           // Restrict crop box to canvas
-        dragMode: 'crop',      // User draws crop box
-        autoCropArea: 1,       // Start with full images selection
-        restore: false,
-        guides: false,         // Clean look (remove small grid)
-        center: true,
-        highlight: true,
-        cropBoxMovable: true,
-        cropBoxResizable: true,
-        toggleDragModeOnDblclick: false,
-        responsive: true,
-        background: false,     // Clean background
-    });
-}
+// Deprecated Cropper Functions (Kept empty to avoid changing too much code structure or reference errors)
+function initCropperInstance() {}
 
 
 function closeCropModal() {
