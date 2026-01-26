@@ -1,0 +1,193 @@
+/* ========================================
+   📱 PHONE OPTIMIZATION & DESIGN TWEAKS
+======================================== */
+
+/* 1. Header Cleanup for Phones */
+@media (max-width: 768px) {
+    .header {
+        padding: 0.5rem 0;
+    }
+    
+    .header-content {
+        gap: 0.5rem;
+    }
+    
+    /* Shrink logo on phone */
+    .logo {
+        font-size: 1.1rem;
+    }
+    .logo-icon {
+        width: 24px;
+        height: 24px;
+    }
+    
+    /* Hide restaurant status on very small screens, or simplify it */
+    .restaurant-status {
+        padding: 4px 8px;
+        font-size: 0.75rem;
+    }
+    .restaurant-status span:last-child {
+        display: none; /* Hide text "Open/Closed" on mobile, keep dot or minimal text */
+    }
+    .restaurant-status.open::after { content: 'مفتوح'; display: inline; }
+    .restaurant-status.closed::after { content: 'مغلق'; display: inline; }
+    
+    
+    /* Cart Button Compact */
+    .cart-btn {
+        padding: 0.5rem 1rem;
+        gap: 0.5rem;
+    }
+    .cart-btn span:nth-child(2) { /* Hide "Cart" Text */
+        display: none;
+    }
+    .cart-count {
+        top: -5px;
+        left: -5px;
+        width: 20px;
+        height: 20px;
+        font-size: 0.7rem;
+    }
+}
+
+
+/* 2. Hero Section Phones */
+@media (max-width: 768px) {
+    .hero {
+        min-height: auto;
+        padding-top: 100px;
+        padding-bottom: 2rem;
+        text-align: center;
+    }
+    .hero h1 {
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+    }
+    .hero p {
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+    }
+    .hero .btn {
+        width: 100%;
+        max-width: 280px;
+    }
+}
+
+
+/* 3. Categories Horizontal Scroll Polish */
+.categories-scroll {
+    padding: 1rem 1rem 2rem 1rem; /* More bottom padding for shadow clipping */
+    /* Ensure nice spacing on mobile */
+    justify-content: flex-start; /* Align left to invite scrolling */
+}
+@media (max-width: 768px) {
+    .categories-scroll {
+        gap: 1rem;
+    }
+    .category-card {
+        min-width: 90px;
+        padding: 0.8rem;
+    }
+    .category-icon {
+        font-size: 1.8rem;
+    }
+    .category-name {
+        font-size: 0.8rem;
+    }
+    /* Hide scrollbar completely but allow scroll */
+    .categories-scroll {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+    .categories-scroll::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+
+/* 4. Meal Cards Mobile Grid */
+@media (max-width: 600px) {
+    .meals-grid {
+        grid-template-columns: 1fr; /* Single column */
+        gap: 1.5rem;
+    }
+    
+    .meal-card {
+        display: flex; /* Horizontal card for mobile? Or keep vertical? */
+        /* Let's try a horizontal layout for mobile to save vertical space? 
+           Actually, vertical cards are better for images. Let's optimize vertical. */
+        flex-direction: row;
+        align-items: stretch;
+        height: 140px; /* Fixed height for consistency */
+    }
+    
+    .meal-image {
+        width: 140px;
+        height: 100%;
+        aspect-ratio: auto; /* Override 1:1 */
+        flex-shrink: 0;
+    }
+    
+    .meal-content {
+        flex: 1;
+        padding: 0.8rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-width: 0; /* Fix flex text overflow */
+    }
+    
+    .meal-name {
+        font-size: 1rem;
+        margin-bottom: 0.2rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .meal-description {
+        font-size: 0.75rem;
+        -webkit-line-clamp: 2;
+        margin-bottom: 0.5rem;
+    }
+    
+    .meal-image .meal-badge {
+        font-size: 0.6rem;
+        padding: 2px 6px;
+        top: 6px;
+        right: 6px;
+    }
+    
+    /* Move Add Button to bottom right of content */
+    .meal-footer {
+        margin-top: auto;
+    }
+    
+    .meal-price {
+        font-size: 1rem;
+    }
+    
+    /* Hide the large hero animation on mobile */
+    .hero::after {
+        display: none;
+    }
+}
+
+/* 5. Mobile Search Bar */
+@media (max-width: 768px) {
+    .section-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+    .search-container {
+        max-width: 100%;
+    }
+}
+
+/* 6. Footer Padding for Bottom Nav/Buttons */
+@media (max-width: 768px) {
+    .footer {
+        padding-bottom: 80px; /* Space for potential floating buttons if added later */
+    }
+}
