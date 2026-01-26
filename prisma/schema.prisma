@@ -34,8 +34,8 @@ model OrderItem {
 // Since I'm overwriting, I must include EVERYTHING.
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 generator client {
