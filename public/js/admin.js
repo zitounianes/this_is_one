@@ -788,14 +788,17 @@ function viewOrderDetails(orderId) {
                 </button>
             </div>
         `;
+
+
     } else if (order.orderType === 'delivery' && order.address) {
         // Fallback for text address
+        const safeAddr = order.address.replace(/'/g, "\\'");
         locationButtons = `
             <div class="location-actions">
                 <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(order.address)}" target="_blank" class="btn-location map" style="text-decoration:none;">
                     <span>📍</span> بحث في الخريطة
                 </a>
-                <button onclick="navigator.clipboard.writeText('${order.address}').then(() => showToast('تم النسخ', 'success'))" 
+                <button onclick="copyAddressToClipboard('${safeAddr}')" 
                         class="btn-location copy">
                     <span>📋</span> نسخ العنوان
                 </button>
@@ -1131,7 +1134,7 @@ function printOrder(orderId) {
                             : '')
                     }
                 </div>
-                </div>
+
                 
                 ${order.notes ? `
                 <div style="border: 1px solid #000; padding: 5px; margin: 5px 0; font-size: 12px;">
@@ -1630,8 +1633,12 @@ function cropAndSave() {
         imageSmoothingQuality: 'high'
     });
     
-    // Export as WebP for performance
-    const croppedDataUrl = canvas.toDataURL('image/webp', 0.85);
+// Helper to copy text to clipboard
+function copyAddressToClipboard(text) {
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(() => showToast('تم نسخ العنوان', 'success'))
+    .catch(() => showToast('فشل النسخ', 'error'));
+}
     
     // Show preview
     const preview = document.getElementById('mealImagePreview');
