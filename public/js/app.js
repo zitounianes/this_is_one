@@ -257,10 +257,10 @@ function createMealCard(meal, index) {
                 ${meal.image 
                     ? `<img src="${meal.image}" alt="${meal.name}" loading="lazy">` 
                     : `<div class="meal-placeholder">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 4a9 9 0 0 0-9 9v2h18v-2a9 9 0 0 0-9-9"></path>
-                            <path d="M12 4V2"></path>
-                            <path d="M4 15h16v2a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"></path>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                             <path d="M12 4a9 9 0 0 0-9 9v2h18v-2a9 9 0 0 0-9-9" fill="#e2e8f0"></path>
+                             <path d="M12 4V2"></path>
+                             <rect x="3" y="15" width="18" height="2" rx="1" fill="#94a3b8" stroke="none"></rect>
                         </svg>
                        </div>`
                 }
@@ -338,10 +338,10 @@ function openMealModal(mealId) {
                 ${meal.image 
                     ? `<img src="${meal.image}" alt="${meal.name}">` 
                     : `<div class="meal-placeholder-large">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 4a9 9 0 0 0-9 9v2h18v-2a9 9 0 0 0-9-9"></path>
-                            <path d="M12 4V2"></path>
-                            <path d="M4 15h16v2a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"></path>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                             <path d="M12 4a9 9 0 0 0-9 9v2h18v-2a9 9 0 0 0-9-9" fill="#e2e8f0"></path>
+                             <path d="M12 4V2"></path>
+                             <rect x="3" y="15" width="18" height="2" rx="1" fill="#94a3b8" stroke="none"></rect>
                         </svg>
                        </div>`
                 }
