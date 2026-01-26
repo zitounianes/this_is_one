@@ -151,16 +151,20 @@ a:hover { color: var(--primary-dark); }
   position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
   background: var(--secondary-dark); /* Solid Black ALWAYS */
   border-bottom: 3px solid var(--primary);
-  padding: var(--space-3) 0;
+  padding: var(--space-4) 0; /* Increase vertical padding */
   /* Optimized transitions */
   transition: transform 0.3s ease, background 0.3s ease, padding 0.3s ease;
   will-change: transform, padding;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  height: 80px; /* Force fixed height to calculate offsets reliably */
+  display: flex;
+  align-items: center;
 }
 .header.scrolled { 
   background: var(--secondary-dark); /* Ensure it stays solid black */
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
   padding: var(--space-2) 0;
+  height: 70px; /* Slightly smaller on scroll */
 }
 
 .header-content { 
@@ -308,7 +312,7 @@ a:hover { color: var(--primary-dark); }
 .hero {
   position: relative; min-height: 75vh;
   display: flex; align-items: center; justify-content: center;
-  padding: calc(80px + var(--space-12)) var(--space-6) var(--space-12);
+  padding: calc(90px + var(--space-12)) var(--space-6) var(--space-12); /* Increased top padding to clear header */
   overflow: hidden;
   background: linear-gradient(180deg, #fffef8 0%, #fff8e8 50%, #fff3d6 100%);
 }
@@ -801,7 +805,7 @@ a:hover { color: var(--primary-dark); }
    CART & ORDERS - صفحات السلة والطلبات
 ═══════════════════════════════════════════ */
 .cart-page { 
-  padding: calc(85px + var(--space-6)) 0 var(--space-12); 
+  padding: calc(100px + var(--space-6)) 0 var(--space-12); /* Increased top padding to clear header */ 
   min-height: 100vh;
   background: linear-gradient(180deg, #fffef8 0%, #fff8e8 100%);
 }
