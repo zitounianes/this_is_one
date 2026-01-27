@@ -472,22 +472,54 @@
                 map.removeLayer(marker);
                 marker = null;
             }
+            if (accuracyCircle) {
+                map.removeLayer(accuracyCircle);
+                accuracyCircle = null;
+            }
             
             map.setView([defaultLat, defaultLng], 13);
             showToast('تم مسح الموقع', 'info');
         }
         
+        let accuracyCircle = null;
+
         async function getMyLocation() {
             const btn = document.querySelector('button[onclick="getMyLocation()"]');
             const originalText = btn.innerHTML;
-            btn.innerHTML = '⏳ جاري التحديد...';
+            btn.innerHTML = '⏳ جاري التحديد (GPS)...';
             btn.disabled = true;
             
             try {
                 const location = await getCurrentLocation();
                 setMapLocation(location.lat, location.lng);
                 reverseGeocode(location.lat, location.lng);
-                showToast('تم تحديد موقعك بنجاح!', 'success');
+                
+                // Accuracy Feedback
+                const acc = Math.round(location.accuracy);
+                
+                // Show circle on map
+                if (accuracyCircle) map.removeLayer(accuracyCircle);
+                accuracyCircle = L.circle([location.lat, location.lng], {
+                    radius: location.accuracy,
+                    color: acc <= 30 ? '#10b981' : '#f59e0b',
+                    fillColor: acc <= 30 ? '#10b981' : '#f59e0b',
+                    fillOpacity: 0.15,
+                    weight: 1
+                }).addTo(map);
+                
+                if (acc <= 30) {
+                    showToast(`تم تحديد موقعك بدقة ممتازة (${acc} متر)`, 'success');
+                } else if (acc <= 100) {
+                    showToast(`دقة الموقع متوسطة (${acc} متر). يفضل استخدام GPS في مكان مفتوح`, 'warning');
+                } else {
+                    showToast(`دقة الموقع منخفضة (${acc} متر). الرجاء تفعيل GPS والتأكد من عدم وجود عوائق`, 'error');
+                }
+                
+                // Zoom to fit accuracy circle if it's large, otherwise standard zoom
+                if (acc > 50) {
+                    map.fitBounds(accuracyCircle.getBounds());
+                }
+
             } catch (error) {
                 showToast(error.message, 'error');
             }
