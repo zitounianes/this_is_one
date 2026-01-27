@@ -1,505 +1,14 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم - فاست فود</title>
-    
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
-    
-    <!-- CSS -->
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/admin.css">
-    
-    <!-- Cropper.js for Image Cropping -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
-    <!-- Chart.js for charts -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta http-equiv="refresh" content="0;url=admin-dashboard.html">
+    <script>
+        window.location.href = "admin-dashboard.html";
+    </script>
+    <title>Redirecting...</title>
 </head>
 <body>
-
-    <!-- Page Loader -->
-    <div id="pageLoader" class="page-loader" style="display: none;">
-        <div class="loader-content">
-            <span class="loader-spinner"></span>
-            <p>جاري التحميل...</p>
-        </div>
-    </div>
-
-    <!-- Login Screen -->
-    <div id="loginScreen" class="login-screen" style="display: none;">
-        <div class="login-card">
-            <div class="login-icon">🔒</div>
-            <h2 style="margin-bottom: 8px;">تسجيل دخول المدير</h2>
-            <p style="margin-bottom: 24px;">الرجاء إدخال كلمة المرور للمتابعة</p>
-            
-            <form onsubmit="handleLogin(event)">
-                <div class="form-group">
-                    <input type="password" id="loginPassword" class="form-input" placeholder="كلمة المرور" required style="text-align: center; letter-spacing: 4px; font-size: 1.2rem;">
-                </div>
-                <button type="submit" class="btn btn-primary btn-block">دخول</button>
-            </form>
-            <p style="margin-top: 16px; font-size: 0.9rem; color: #6b7280;">أدخل كلمة السر للوصول للوحة التحكم</p>
-        </div>
-    </div>
-
-    <!-- Admin Dashboard Container -->
-    <div id="adminDashboard" class="admin-container" style="display: none;">
-        
-        <!-- Sidebar -->
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <div class="sidebar-brand">
-                    <span class="logo-icon rocket-icon" style="width: 32px; height: 32px; display: inline-flex;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
-                           <path class="rocket-body" d="M12 2.5s-6 6.5-6 11c0 3 2.5 5.5 6 5.5s6-2.5 6-5.5c0-4.5-6-11-6-11z" fill="#E0E0E0"/>
-                           <path class="rocket-window" d="M12 9a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z" fill="#3B82F6"/>
-                           <path class="rocket-fins" d="M5.5 14L2 19h5l1-2.5M18.5 14L22 19h-5l-1-2.5" fill="#FF5722"/>
-                           <path class="rocket-fire" d="M12 20s-1.5 1.5-1.5 3 .5 1 1.5 1 1.5.5 1.5-1-1.5-3-1.5-3z" fill="#FFC107"/>
-                        </svg>
-                    </span>
-                    <span>مطعمي</span>
-                </div>
-                <button class="btn-icon" onclick="toggleSidebar()" style="display: none; color: white;">✕</button>
-            </div>
-            
-            <nav class="sidebar-nav">
-                <div class="nav-item active" id="nav-dashboard" onclick="showSection('dashboard')">
-                    <span>📊</span> الرئيسية
-                </div>
-                <div class="nav-item" id="nav-orders" onclick="showSection('orders')">
-                    <span>📦</span> الطلبات
-                    <span id="newOrdersBadge" style="display: none; margin-right: auto; background: #ef4444; color: white; padding: 2px 8px; border-radius: 99px; font-size: 0.75rem;">0</span>
-                </div>
-                <div class="nav-item" id="nav-ratings" onclick="showSection('ratings')">
-                    <span>⭐</span> التقييمات
-                    <span id="newRatingsBadge" style="display: none; margin-right: auto; background: #ef4444; color: white; padding: 2px 8px; border-radius: 99px; font-size: 0.75rem;">0</span>
-                </div>
-                <div class="nav-item" id="nav-meals" onclick="showSection('meals')">
-                    <span>🍔</span> الوجبات
-                </div>
-                <div class="nav-item" id="nav-categories" onclick="showSection('categories')">
-                    <span>📁</span> الأقسام
-                </div>
-                <div class="nav-item" id="nav-settings" onclick="showSection('settings')">
-                    <span>⚙️</span> الإعدادات
-                </div>
-            </nav>
-            
-            <div class="sidebar-footer">
-                <button onclick="window.open('index.html', '_blank')" class="footer-btn">
-                    <span>👁️</span> المتجر
-                </button>
-                <div style="display: flex; gap: 8px;">
-                    <button onclick="handleLogout()" class="footer-btn logout" style="flex: 1;">
-                        <span>🚪</span> خروج
-                    </button>
-                </div>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Top Bar -->
-            <header class="top-bar">
-                <div style="display: flex; align-items: center; gap: 16px;">
-                    <button class="menu-toggle btn-icon" onclick="toggleSidebar()">☰</button>
-                    <h1 class="page-title" id="pageTitle">الرئيسية</h1>
-                </div>
-                <div>
-                    <span id="currentTime" style="font-weight: 600; color: #4b5563;"></span>
-                </div>
-            </header>
-
-            <div class="content-wrapper">
-                
-                
-                <!-- Alerts Box Moved to Orders Section -->
-
-                <!-- ================== DASHBOARD SECTION ================== -->
-                <!-- ================== DASHBOARD SECTION ================== -->
-                <section id="section-dashboard">
-                    
-                    <!-- 1. Summary Cards (Top Row) -->
-                    <div id="statsGridEnhanced" class="stats-grid-row">
-                        <!-- Populated by JS -->
-                    </div>
-
-                    <!-- 2. Monthly Revenue Chart -->
-                    <div class="chart-section fade-in">
-                        <div class="section-header-simple">
-                            <h3>📈 دخل الشهر الحالي</h3>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="revenueChart"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- 3. Top Selling Meals -->
-                    <div class="action-orders-section fade-in">
-                        <div class="section-header-simple">
-                            <h3>🏆 أكثر الوجبات طلباً اليوم (Top 10)</h3>
-                        </div>
-                        <div id="topSellingMealsList" class="action-orders-list">
-                            <!-- Populated by JS -->
-                        </div>
-                    </div>
-
-                </section>
-
-                <!-- ================== ORDERS SECTION ================== -->
-                <section id="section-orders" style="display: none;">
-                    <!-- Alerts Box (Moved here) -->
-                    <div class="alerts-box" id="alertsBox" style="margin-bottom: 20px;"></div>
-
-                    <div class="orders-filter">
-                        <div class="orders-tab" data-status="all">الكل</div>
-                        <div class="orders-tab active" data-status="new">جديد</div>
-                        <div class="orders-tab" data-status="preparing">تحضير</div>
-                        <div class="orders-tab" data-status="ready">جاهز</div>
-                        <div class="orders-tab" data-status="delivered">مسلم</div>
-                        <div class="orders-tab" data-status="cancelled">ملغى</div>
-                    </div>
-                    
-                    <div id="ordersList" class="orders-grid">
-                        <!-- Populated by JS -->
-                    </div>
-                </section>
-
-                <!-- ================== MEALS SECTION ================== -->
-                <section id="section-meals" style="display: none;">
-                    <!-- Header Row with Add Button -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
-                        <button class="btn btn-primary" onclick="openMealModal()">
-                            <span>➕</span> إضافة وجبة
-                        </button>
-                        
-                        <!-- Bulk Actions Toolbar -->
-                        <div class="bulk-actions-toolbar">
-                            <span class="bulk-label">إجراءات سريعة:</span>
-                            <button class="bulk-btn bulk-btn-danger" onclick="bulkToggleMeals(false)" title="إيقاف جميع الوجبات">
-                                ⏸️ إيقاف الكل
-                            </button>
-                            <button class="bulk-btn bulk-btn-success" onclick="bulkToggleMeals(true)" title="تفعيل جميع الوجبات">
-                                ▶️ تفعيل الكل
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Category Filter -->
-                    <div class="filter-wrapper" style="margin-bottom: 24px;">
-                        <div class="select-wrapper">
-                            <select id="mealsCategorySelect" onchange="filterMeals(this.value)">
-                                <!-- Populated by JS -->
-                            </select>
-                            <span class="select-arrow">▼</span>
-                        </div>
-                        
-                        <!-- Meals Stats -->
-                        <div id="mealsStats" class="meals-stats"></div>
-                    </div>
-
-                    <div id="mealsGrid" class="meals-grid-admin">
-                        <!-- Populated by JS -->
-                    </div>
-                </section>
-
-                <!-- ================== CATEGORIES SECTION ================== -->
-                <section id="section-categories" style="display: none;">
-                    <div style="margin-bottom: 24px;">
-                        <button class="btn btn-primary" onclick="openCategoryModal()">
-                            <span>➕</span> إضافة قسم
-                        </button>
-                    </div>
-                    
-                    <div id="categoriesList" class="categories-list">
-                        <!-- Populated by JS -->
-                    </div>
-                </section>
-
-                <!-- ================== RATINGS SECTION ================== -->
-                <section id="section-ratings" style="display: none;">
-                    <div style="margin-bottom: 24px;">
-                        <h2 style="margin-bottom: 1rem;">⭐ تقييمات العملاء</h2>
-                    </div>
-                    
-                    <div id="ratingsList" class="ratings-list" style="display: grid; gap: 1rem;">
-                        <!-- Populated by JS -->
-                    </div>
-                </section>
-
-                <!-- ================== SETTINGS SECTION ================== -->
-                <section id="section-settings" style="display: none;">
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
-                        
-                        <!-- General Info -->
-                        <div style="background: white; padding: 24px; border-radius: 16px; border: 1px solid #e5e7eb;">
-                            <h3 style="margin-bottom: 20px;">🏠 معلومات المطعم</h3>
-                            <div class="form-group">
-                                <label class="form-label">اسم المطعم</label>
-                                <input type="text" id="settingName" class="form-input">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">الهاتف</label>
-                                <input type="text" id="settingPhone" class="form-input">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">العنوان</label>
-                                <textarea id="settingAddress" class="form-textarea" style="min-height: 80px;"></textarea>
-                            </div>
-                        </div>
-
-                        <!-- Working Hours -->
-                        <div style="background: white; padding: 24px; border-radius: 16px; border: 1px solid #e5e7eb;">
-                            <h3 style="margin-bottom: 20px;">⏰ أوقات العمل</h3>
-                            <div class="form-group" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
-                                <label class="form-label" style="margin-bottom: 0; font-size: 1.1rem;">حالة المطعم</label>
-                                <label class="switch">
-                                    <input type="checkbox" id="settingIsOpen">
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                            <p style="font-size: 0.9rem; color: #6b7280; line-height: 1.5;">
-                                عند تفعيل هذا الخيار، سيظهر المطعم "مفتوح" للعملاء وسيتم استقبال الطلبات. عند إيقافه، سيظهر "مغلق" ولن يتم استقبال طلبات جديدة.
-                            </p>
-                        </div>
-
-                        <!-- Delivery -->
-                        <div style="background: white; padding: 24px; border-radius: 16px; border: 1px solid #e5e7eb;">
-                            <h3 style="margin-bottom: 20px;">🛵 التوصيل</h3>
-                            <div class="form-group">
-                                <label class="form-label">نظام التوصيل</label>
-                                <select id="settingDeliveryType" class="form-select" onchange="toggleDeliveryType()">
-                                    <option value="fixed">سعر ثابت</option>
-                                    <option value="not_specified">لم يذكر</option>
-                                    <option value="free">مجاني</option>
-                                </select>
-                            </div>
-                            
-                            <!-- Fixed Cost Settings -->
-                            <div class="form-group" id="fixedCostGroup">
-                                <label class="form-label">تكلفة التوصيل (دج)</label>
-                                <input type="number" id="settingFixedCost" class="form-input">
-                            </div>
-
-                            <!-- Distance Settings -->
-                            <div id="distanceCostGroup" style="display: none;">
-                                <div class="form-group">
-                                    <label class="form-label">التكلفة لكل كيلومتر (دج)</label>
-                                    <input type="number" id="settingCostPerKm" class="form-input" placeholder="مثال: 50">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">أقصى مسافة للتوصيل (كم)</label>
-                                    <input type="number" id="settingMaxDistance" class="form-input" placeholder="مثال: 20">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">موقع المطعم (للإحداثيات)</label>
-                                    <div style="display: flex; gap: 8px;">
-                                        <input type="number" id="settingRestLat" class="form-input" placeholder="خط العرض (Latitude)" step="any">
-                                        <input type="number" id="settingRestLng" class="form-input" placeholder="خط الطول (Longitude)" step="any">
-                                    </div>
-                                    <button type="button" onclick="detectRestaurantLocation()" class="btn btn-secondary btn-sm" style="margin-top: 8px;">
-                                        📍 تحديد موقعي الحالي
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Change Password -->
-                        <div style="background: white; padding: 24px; border-radius: 16px; border: 1px solid #e5e7eb;">
-                            <h3 style="margin-bottom: 20px;">🔐 تغيير كلمة السر</h3>
-                            <div class="form-group">
-                                <label class="form-label">كلمة السر الحالية</label>
-                                <input type="password" id="currentPassword" class="form-input" placeholder="أدخل كلمة السر الحالية">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">كلمة السر الجديدة</label>
-                                <input type="password" id="newPassword" class="form-input" placeholder="أدخل كلمة السر الجديدة">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">تأكيد كلمة السر الجديدة</label>
-                                <input type="password" id="confirmPassword" class="form-input" placeholder="أعد إدخال كلمة السر الجديدة">
-                            </div>
-                            <button type="button" onclick="changePassword()" class="btn btn-primary" style="width: 100%;">
-                                🔒 تغيير كلمة السر
-                            </button>
-                        </div>
-
-                    </div>
-                    
-                    <div style="margin-top: 24px; text-align: left;">
-                        <button onclick="handleSaveSettings()" class="btn btn-primary btn-lg">
-                            <span>💾</span> حفظ الإعدادات
-                        </button>
-                    </div>
-                </section>
-
-            </div>
-        </main>
-    </div>
-
-    <!-- ================== MODALS ================== -->
-
-    <!-- Order Modal -->
-    <div id="orderModal" class="modal-overlay">
-        <div class="modal" style="max-width: 600px;">
-            <div class="modal-header">
-                <h3 class="modal-title">تفاصيل الطلب</h3>
-                <button class="modal-close" onclick="closeOrderModal()">✕</button>
-            </div>
-            <div class="modal-body" id="orderModalBody">
-                <!-- Content injected by JS -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Meal Modal -->
-    <div id="mealModal" class="modal-overlay">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 class="modal-title" id="mealModalTitle">إضافة/تعديل وجبة</h3>
-                <button class="modal-close" onclick="closeMealModal()">✕</button>
-            </div>
-            <form id="mealForm" onsubmit="saveMeal(event)">
-                <div class="modal-body">
-                    <input type="hidden" id="mealId">
-                    <div class="form-group">
-                        <label class="form-label">صورة الوجبة</label>
-                        <div class="file-upload-wrapper">
-                            <input type="file" id="mealImageInput" class="file-input" accept="image/*" hidden>
-                            <label for="mealImageInput" class="file-label">
-                                <span class="file-icon">📷</span>
-                                <span class="file-text">اضغط لرفع صورة</span>
-                            </label>
-                        </div>
-                        <div id="mealImagePreview" style="margin-top: 10px; height: 150px; background: #f9f9f9; border-radius: 12px; display: none; align-items: center; justify-content: center; overflow: hidden; position: relative;">
-                            <img src="" style="width: 100%; height: 100%; object-fit: cover;">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">اسم الوجبة</label>
-                        <input type="text" id="mealName" class="form-input" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">القسم</label>
-                        <select id="mealCategory" class="form-select" required></select>
-                    </div>
-                    
-                    <!-- Sizes Toggle -->
-                    <div class="form-group">
-                        <div class="sizes-toggle-wrapper">
-                            <label class="form-label" style="margin-bottom: 0;">أحجام متعددة</label>
-                            <label class="switch">
-                                <input type="checkbox" id="mealHasSizes" onchange="toggleSizesSection()">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        <p class="form-hint">فعّل هذا الخيار إذا كانت الوجبة متوفرة بأحجام مختلفة (صغير، وسط، كبير...)</p>
-                    </div>
-                    
-                    <!-- Single Price (shown when no sizes) -->
-                    <div class="form-group" id="singlePriceGroup">
-                        <label class="form-label">السعر (دج)</label>
-                        <input type="number" id="mealPrice" class="form-input">
-                    </div>
-                    
-                    <!-- Sizes Section (hidden by default) -->
-                    <div id="sizesSection" class="sizes-section" style="display: none;">
-                        <div class="sizes-header">
-                            <label class="form-label">الأحجام والأسعار</label>
-                            <button type="button" class="btn-add-size" onclick="addSizeRow()">
-                                ➕ إضافة حجم
-                            </button>
-                        </div>
-                        <div id="sizesContainer">
-                            <!-- Size rows will be added here dynamically -->
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">الوصف</label>
-                        <textarea id="mealDescription" class="form-textarea"></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="closeMealModal()">إلغاء</button>
-                    <button type="submit" class="btn btn-primary">حفظ</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Category Modal -->
-    <div id="categoryModal" class="modal-overlay">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 class="modal-title" id="categoryModalTitle">إضافة/تعديل قسم</h3>
-                <button class="modal-close" onclick="closeCategoryModal()">✕</button>
-            </div>
-            <form id="categoryForm" onsubmit="saveCategory(event)">
-                <div class="modal-body">
-                    <input type="hidden" id="categoryId">
-                    <div class="form-group">
-                        <label class="form-label">اسم القسم</label>
-                        <input type="text" id="categoryName" class="form-input" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">أيقونة القسم (SVG)</label>
-                        <div class="file-upload-wrapper">
-                            <input type="file" id="categoryIconInput" class="file-input" accept=".svg" hidden>
-                            <label for="categoryIconInput" class="file-label">
-                                <span class="file-icon">📂</span>
-                                <span class="file-text">رفع أيقونة SVG</span>
-                            </label>
-                        </div>
-                        <div id="categoryIconPreview" style="margin-top: 10px; height: 80px; width: 80px; background: #f9f9f9; border-radius: 8px; display: none; align-items: center; justify-content: center; border: 1px dashed #ccc;">
-                            <!-- Preview -->
-                        </div>
-                        <input type="hidden" id="categoryIcon">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="closeCategoryModal()">إلغاء</button>
-                    <button type="submit" class="btn btn-primary">حفظ</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Crop Modal -->
-    <div id="cropModal" class="modal-overlay" style="z-index: 9999;">
-        <div class="modal" style="width: 90%; max-width: 500px;">
-            <div class="modal-header">
-                <h3 class="modal-title">قص الصورة</h3>
-                <button class="modal-close" onclick="closeCropModal()">✕</button>
-            </div>
-            <div class="modal-body" style="height: 400px; padding: 0; background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-                <img id="cropImage" src="" style="max-width: 100%; max-height: 100%; display: block;">
-            </div>
-            <div class="modal-footer" style="justify-content: space-between;">
-                <button type="button" class="btn btn-secondary" onclick="closeCropModal()">إلغاء</button>
-                <div style="font-size: 0.8rem; color: #666;">اسحب الصورة لضبط الإطار</div>
-                <button type="button" class="btn btn-primary" onclick="cropAndSave()">قص وحفظ</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
-    <script src="js/api-client.js"></script>
-    <script src="js/data.js"></script>
-    <script src="js/utils.js"></script>
-    <script src="js/orders.js"></script>
-    <script src="js/admin.js"></script>
-    <script>
-        // Update time every second
-        setInterval(() => {
-            const now = new Date();
-            document.getElementById('currentTime').textContent = now.toLocaleTimeString('ar-DZ', {hour: '2-digit', minute:'2-digit'});
-        }, 1000);
-    </script>
+    <p>جاري تحويلك إلى لوحة التحكم...</p>
 </body>
 </html>

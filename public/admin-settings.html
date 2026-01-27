@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الإعدادات - لوحة التحكم</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+    <!-- Admin Dashboard Container -->
+    <div id="adminDashboard" class="admin-container" style="display: block;">
+        
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-brand">
+                    <span class="logo-icon rocket-icon" style="width: 32px; height: 32px; display: inline-flex;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                           <path class="rocket-body" d="M12 2.5s-6 6.5-6 11c0 3 2.5 5.5 6 5.5s6-2.5 6-5.5c0-4.5-6-11-6-11z" fill="#E0E0E0"/>
+                           <path class="rocket-window" d="M12 9a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z" fill="#3B82F6"/>
+                           <path class="rocket-fins" d="M5.5 14L2 19h5l1-2.5M18.5 14L22 19h-5l-1-2.5" fill="#FF5722"/>
+                           <path class="rocket-fire" d="M12 20s-1.5 1.5-1.5 3 .5 1 1.5 1 1.5.5 1.5-1-1.5-3-1.5-3z" fill="#FFC107"/>
+                        </svg>
+                    </span>
+                    <span>مطعمي</span>
+                </div>
+                <button class="btn-icon" onclick="toggleSidebar()" style="display: none; color: white;">✕</button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-item" id="nav-dashboard" onclick="window.location.href='admin-dashboard.html'">
+                    <span>📊</span> الرئيسية
+                </div>
+                <div class="nav-item" id="nav-orders" onclick="window.location.href='admin-orders.html'">
+                    <span>📦</span> الطلبات
+                </div>
+                <div class="nav-item" id="nav-ratings" onclick="window.location.href='admin-ratings.html'">
+                    <span>⭐</span> التقييمات
+                </div>
+                <div class="nav-item" id="nav-meals" onclick="window.location.href='admin-meals.html'">
+                    <span>🍔</span> الوجبات
+                </div>
+                <div class="nav-item" id="nav-categories" onclick="window.location.href='admin-categories.html'">
+                    <span>📁</span> الأقسام
+                </div>
+                <div class="nav-item active" id="nav-settings" onclick="window.location.href='admin-settings.html'">
+                    <span>⚙️</span> الإعدادات
+                </div>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <button onclick="window.open('index.html', '_blank')" class="footer-btn">
+                    <span>👁️</span> المتجر
+                </button>
+                <div style="display: flex; gap: 8px;">
+                     <button onclick="handleLogout()" class="footer-btn logout" style="flex: 1;">
+                        <span>🚪</span> خروج
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <button class="menu-toggle btn-icon" onclick="toggleSidebar()">☰</button>
+                    <h1 class="page-title" id="pageTitle">الإعدادات</h1>
+                </div>
+                <div>
+                    <span id="currentTime" style="font-weight: 600; color: #4b5563;"></span>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                
+                <!-- ================== SETTINGS SECTION ================== -->
+                <section id="section-settings" style="display: block;">
+                    
+                    <div class="settings-grid">
+                        <!-- General Settings -->
+                        <div class="settings-card">
+                            <h3 class="card-title">🏢 معلومات المطعم</h3>
+                            <div class="form-group">
+                                <label class="form-label">اسم المطعم</label>
+                                <input type="text" id="settingName" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">رقم الهاتف</label>
+                                <input type="text" id="settingPhone" class="form-input" dir="ltr" style="text-align: right;">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">العنوان</label>
+                                <textarea id="settingAddress" class="form-textarea"></textarea>
+                            </div>
+                            <!-- Restaurant Status -->
+                            <div class="form-group">
+                                <label class="form-label">حالة المطعم (مفتوح/مغلق)</label>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <label class="switch">
+                                        <input type="checkbox" id="settingIsOpen">
+                                        <span class="slider"></span>
+                                    </label>
+                                    <span style="font-size: 0.9rem; color: #666;">إظهار المطعم كمفتوح لاستقبال الطلبات</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Delivery Settings -->
+                        <div class="settings-card">
+                            <h3 class="card-title">🛵 إعدادات التوصيل</h3>
+                            <div class="form-group">
+                                <label class="form-label">نوع تكلفة التوصيل</label>
+                                <select id="settingDeliveryType" class="form-select" onchange="toggleDeliveryType()">
+                                    <option value="fixed">سعر ثابت</option>
+                                    <option value="distance">حسب المسافة</option>
+                                    <option value="free">مجاني</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Fixed Cost -->
+                            <div id="fixedCostGroup">
+                                <div class="form-group">
+                                    <label class="form-label">سعر التوصيل (دج)</label>
+                                    <input type="number" id="settingFixedCost" class="form-input">
+                                </div>
+                            </div>
+                            
+                            <!-- Distance Based -->
+                            <div id="distanceCostGroup" style="display: none;">
+                                <div class="form-group">
+                                    <label class="form-label">سعر الكيلومتر (دج)</label>
+                                    <input type="number" id="settingCostPerKm" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">أقصى مسافة توصيل (كم)</label>
+                                    <input type="number" id="settingMaxDistance" class="form-input">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">موقع المطعم (للإحداثيات)</label>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                                        <input type="text" id="settingRestLat" class="form-input" placeholder="Latitude" readonly>
+                                        <input type="text" id="settingRestLng" class="form-input" placeholder="Longitude" readonly>
+                                    </div>
+                                    <button onclick="detectRestaurantLocation()" class="btn btn-secondary" style="width: 100%;">
+                                        📍 تحديد موقعي الحالي
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Actions -->
+                        <div class="settings-card" style="grid-column: 1/-1;">
+                            <button onclick="handleSaveSettings()" class="btn btn-primary" style="width: 100%; padding: 15px; font-size: 1.1rem;">
+                                حفظ التغييرات
+                            </button>
+                        </div>
+
+                        <!-- Security -->
+                        <div class="settings-card" style="grid-column: 1/-1; margin-top: 20px; border-top: 4px solid #ef4444;">
+                            <h3 class="card-title">🔒 الأمان (تغيير كلمة المرور)</h3>
+                            <div class="form-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                                <div class="form-group">
+                                    <label class="form-label">كلمة السر الحالية</label>
+                                    <input type="password" id="currentPassword" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">كلمة السر الجديدة</label>
+                                    <input type="password" id="newPassword" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">تأكيد كلمة السر</label>
+                                    <input type="password" id="confirmPassword" class="form-input">
+                                </div>
+                            </div>
+                            <button onclick="changePassword()" class="btn btn-secondary" style="margin-top: 15px;">
+                                🔐 تحديث كلمة السر
+                            </button>
+                        </div>
+                    </div>
+
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/api-client.js"></script>
+    <script>window.SKIP_AUTO_INIT = true;</script>
+    <script src="js/data.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/admin-core.js"></script>
+    <script src="js/admin-settings.js"></script>
+    
+    <script>
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleTimeString('ar-DZ', {hour: '2-digit', minute:'2-digit'});
+        }, 1000);
+    </script>
+</body>
+</html>

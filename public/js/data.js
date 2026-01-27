@@ -62,51 +62,77 @@ let initPromise = null;
 // Initialization
 // ===================================
 
-async function initializeData() {
-    if (initPromise) return initPromise;
+async function initializeData(options = {}) {
+    if (initPromise && !options.force) return initPromise;
     
+    // Default to loading all if no specific options provided (backward compatibility)
+    // But if options are provided, only load what is requested.
+    // If options is empty object, we assume "Load All" to be safe for existing calls,
+    // unless we detect a special flag or strictly check keys.
+    const loadAll = Object.keys(options).length === 0;
+
+    const shouldLoadCategories = loadAll || options.categories;
+    const shouldLoadMeals = loadAll || options.meals;
+    const shouldLoadSettings = loadAll || options.settings !== false; // valid unless explicitly false
+    const shouldLoadOrders = loadAll || options.orders;
+
     initPromise = (async () => {
         try {
-            console.log('🔄 Initializing Data from Backend...');
+            console.log('🔄 Initializing Data from Backend...', options);
             
-            // 1. Load data in parallel
-            // Check if we're in admin page to include all categories
+            // Checks
             const isAdminPage = window.location.pathname.includes('admin');
             
-            const [categories, meals, settings, orders] = await Promise.all([
-                ApiClient.getCategories(isAdminPage).catch(err => {
+            const promises = [];
+            const keys = [];
+
+            if (shouldLoadCategories) {
+                promises.push(ApiClient.getCategories(isAdminPage).catch(err => {
                     console.error('Failed to load categories', err);
                     return null;
-                }),
-                ApiClient.getMeals().catch(err => {
+                }));
+                keys.push('categories');
+            }
+
+            if (shouldLoadMeals) {
+                promises.push(ApiClient.getMeals().catch(err => {
                     console.error('Failed to load meals', err);
                     return null;
-                }),
-                ApiClient.getSettings().catch(err => {
+                }));
+                keys.push('meals');
+            }
+
+            if (shouldLoadSettings) {
+                promises.push(ApiClient.getSettings().catch(err => {
                      console.error('Failed to load settings', err);
                      return null;
-                }),
-                ApiClient.getOrders().catch(err => {
-                    // Orders might fail for non-admin, just return empty
+                }));
+                keys.push('settings');
+            }
+
+            if (shouldLoadOrders) {
+                promises.push(ApiClient.getOrders().catch(err => {
                     return [];
-                })
-            ]);
-            
-            // 2. Update State with Fallback
-            // If API returns null/empty, use FALLBACK_DATA
-            
-            appState.categories = (categories && categories.length > 0) ? categories : FALLBACK_DATA.categories;
-            appState.meals = (meals && meals.length > 0) ? meals : FALLBACK_DATA.meals;
-            // For settings, merge fallback with API result (if any)
-            appState.settings = { ...FALLBACK_DATA.settings, ...(settings || {}) };
-            
-            // MERGE LOCAL DATA REMOVED - FULL CLOUD SYNC MODE
-            console.log('☁️ Syncing with Cloud Database...');
+                }));
+                keys.push('orders');
+            }
 
-
-            // Polyfill orderNumber and normalize items for frontend compatibility
-            appState.orders = (appState.orders || []).map(o => normalizeOrder(o));
+            const results = await Promise.all(promises);
             
+            // Map results back to appState
+            keys.forEach((key, index) => {
+                const data = results[index];
+                if (key === 'categories') {
+                    appState.categories = (data && data.length > 0) ? data : (loadAll ? FALLBACK_DATA.categories : []);
+                } else if (key === 'meals') {
+                    appState.meals = (data && data.length > 0) ? data : (loadAll ? FALLBACK_DATA.meals : []);
+                } else if (key === 'settings') {
+                    appState.settings = { ...FALLBACK_DATA.settings, ...(data || {}) };
+                } else if (key === 'orders') {
+                     appState.orders = (data || []).map(o => normalizeOrder(o));
+                }
+            });
+
             isDataInitialized = true;
             console.log('✅ Data Initialized', appState);
             
@@ -116,10 +142,12 @@ async function initializeData() {
             return true;
         } catch (error) {
             console.error('❌ Data Initialization Failed:', error);
-            // Even on fatal error, use fallback
-            appState.categories = FALLBACK_DATA.categories;
-            appState.meals = FALLBACK_DATA.meals;
-            appState.settings = FALLBACK_DATA.settings;
+            // Fallback only if we tried to load everything
+            if (loadAll) {
+                appState.categories = FALLBACK_DATA.categories;
+                appState.meals = FALLBACK_DATA.meals;
+                appState.settings = FALLBACK_DATA.settings;
+            }
             document.dispatchEvent(new CustomEvent('data-ready'));
             return false;
         }
