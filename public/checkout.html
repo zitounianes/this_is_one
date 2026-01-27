@@ -105,6 +105,10 @@
                             
                                 <!-- Map Container -->
                                 <div class="map-wrapper" style="position: relative;">
+                                    <div id="mapLoader" class="map-loading-overlay">
+                                        <div class="spinner"></div>
+                                        <span style="margin-top: 10px; font-weight: 600;">جاري تحميل الخريطة...</span>
+                                    </div>
                                     <div id="mapContainer" class="map-container"></div>
                                 </div>
                             
@@ -120,7 +124,10 @@
                             
                             <!-- Selected Location Display -->
                             <div id="selectedLocation" class="selected-location-card">
-                                <strong style="color: var(--accent);">✓ الموقع المحدد:</strong>
+                                <div style="display: flex; align-items: center; justify-content: space-between;">
+                                    <strong style="color: var(--accent);">✓ الموقع المحدد:</strong>
+                                    <span style="font-size: 0.8rem; background: #fff3cd; color: #856404; padding: 2px 8px; border-radius: 4px;">⚠️ تأكد أن الموقع دقيق</span>
+                                </div>
                                 <p id="selectedLocationText" style="margin: 0.5rem 0 0; color: var(--text-secondary);"></p>
                             </div>
                             
@@ -211,13 +218,35 @@
                 await initializeData();
             }
 
+            // Load Header Name
+            const settings = getSettings();
+            if (settings.restaurantName) {
+                const logoName = document.getElementById('logoName');
+                if (logoName) logoName.textContent = settings.restaurantName;
+            }
+
             renderCheckoutItems();
             updateCheckoutSummary();
-            initMap();
+            
+            // Artificial delay for professional feel + valid map resizing
+            setTimeout(() => {
+                initMap();
+                const loader = document.getElementById('mapLoader');
+                if (loader) {
+                    loader.style.opacity = '0';
+                    setTimeout(() => loader.style.display = 'none', 300);
+                }
+            }, 1000);
+
             setupLocationSearch();
             
             // Listen for any latent updates
             document.addEventListener('data-ready', () => {
+                const settings = getSettings();
+                if (settings.restaurantName) {
+                    const logoName = document.getElementById('logoName');
+                    if (logoName) logoName.textContent = settings.restaurantName;
+                }
                 updateCheckoutSummary();
             });
         });
@@ -234,6 +263,9 @@
                 setMapLocation(e.latlng.lat, e.latlng.lng);
                 reverseGeocode(e.latlng.lat, e.latlng.lng);
             });
+            
+            // Show toast instruction
+            showToast('اضغط على الخريطة لتحديد موقعك بدقة', 'info');
         }
 
         function setupLocationSearch() {
@@ -718,6 +750,17 @@
             .cart-summary {
                 position: static !important;
             }
+        }
+        .map-loading-overlay {
+            position: absolute;
+            inset: 0;
+            background: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            transition: opacity 0.3s ease;
         }
     </style>
 </body>
