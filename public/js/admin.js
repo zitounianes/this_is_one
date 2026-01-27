@@ -49,21 +49,31 @@ document.addEventListener('DOMContentLoaded', () => {
                          return;
                     }
                     
-                    // Set to hidden input
-                    document.getElementById('categoryIcon').value = svgContent;
+                    // Process SVG to ensure it fits nicely
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(svgContent, 'image/svg+xml');
+                    const svgEl = doc.querySelector('svg');
                     
-                    // Show Preview
-                    const preview = document.getElementById('categoryIconPreview');
-                    preview.innerHTML = svgContent;
-                    preview.style.display = 'flex';
-                    
-                    // Fix SVG dimensions for preview
-                    const svgEl = preview.querySelector('svg');
-                    if(svgEl) {
+                    if (svgEl) {
                         svgEl.removeAttribute('width');
                         svgEl.removeAttribute('height');
                         svgEl.style.width = '100%';
                         svgEl.style.height = '100%';
+                        svgEl.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+                        
+                        // Serializer
+                        const serializer = new XMLSerializer();
+                        const newSvgContent = serializer.serializeToString(svgEl);
+                        
+                        // Set to hidden input
+                        document.getElementById('categoryIcon').value = newSvgContent;
+                        
+                        // Show Preview
+                        const preview = document.getElementById('categoryIconPreview');
+                        preview.innerHTML = newSvgContent;
+                        preview.style.display = 'flex';
+                    } else {
+                         showToast('ملف SVG غير صالح', 'error');
                     }
                 }
                 reader.readAsText(file);
