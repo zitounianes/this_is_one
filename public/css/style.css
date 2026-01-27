@@ -1029,7 +1029,7 @@ button, input { font-family: inherit; }
 .phone-search-icon {
     font-size: 3rem;
     margin-bottom: 1rem;
-    animation: float-icon 4s ease-in-out infinite;
+    /* animation: float-icon 4s ease-in-out infinite; REMOVED per user request */
 }
 
 .orders-list {
