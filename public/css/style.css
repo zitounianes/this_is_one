@@ -1319,21 +1319,22 @@ button, input { font-family: inherit; }
 }
 
 .spinner-logo {
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
   animation: bounce-logo 2s infinite ease-in-out;
   position: relative;
   z-index: 2;
-  color: var(--primary);
+  /* color: var(--primary); REMOVED: SVG has its own colors */
 }
 
 .spinner-logo svg {
   width: 100%;
   height: 100%;
-  filter: drop-shadow(0 4px 6px rgba(249, 115, 22, 0.2));
+  /* Enhancing the drop shadow for 3D effect */
+  filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.15));
 }
 
 .spinner-ring {
