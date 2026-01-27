@@ -18,6 +18,7 @@ export async function GET(request) {
     });
     return NextResponse.json(meals);
   } catch (error) {
+    console.error('GET /api/meals error:', error);
     return NextResponse.json({ error: 'Failed to fetch meals' }, { status: 500 });
   }
 }
@@ -25,11 +26,29 @@ export async function GET(request) {
 export async function POST(request) {
   try {
     const body = await request.json();
+    
+    console.log('POST /api/meals - received:', JSON.stringify({
+      id: body.id,
+      name: body.name,
+      categoryId: body.categoryId,
+      price: body.price,
+      hasSizes: body.hasSizes,
+      sizesCount: body.sizes?.length
+    }));
+
+    // Validate required fields
+    if (!body.name || body.name.trim() === '') {
+      return NextResponse.json({ error: 'اسم الوجبة مطلوب' }, { status: 400 });
+    }
+
+    if (!body.categoryId) {
+      return NextResponse.json({ error: 'القسم مطلوب' }, { status: 400 });
+    }
 
     // ID exists -> Update
     if (body.id) {
         // Handle sizes update (delete old, create new is simplest strategy for now)
-        if (body.sizes) {
+        if (body.sizes !== undefined) {
             await prisma.mealSize.deleteMany({ where: { mealId: body.id }});
         }
         
@@ -37,14 +56,14 @@ export async function POST(request) {
             where: { id: body.id },
             data: {
                 name: body.name,
-                description: body.description,
-                image: body.image,
-                price: parseFloat(body.price),
-                categoryId: body.categoryId,
-                active: body.active,
-                popular: body.popular,
-                hasSizes: body.hasSizes,
-                sizes: body.sizes ? {
+                description: body.description || '',
+                image: body.image || null,
+                price: parseFloat(body.price) || 0,
+                categoryId: parseInt(body.categoryId),
+                active: body.active !== undefined ? body.active : true,
+                popular: body.popular || false,
+                hasSizes: body.hasSizes || false,
+                sizes: body.sizes && body.sizes.length > 0 ? {
                     create: body.sizes.map(s => ({
                         name: s.name,
                         price: parseFloat(s.price)
@@ -53,6 +72,7 @@ export async function POST(request) {
             },
             include: { sizes: true }
         });
+        console.log('Meal updated:', meal.id);
         return NextResponse.json(meal);
     }
     
@@ -60,10 +80,10 @@ export async function POST(request) {
     const meal = await prisma.meal.create({
       data: {
         name: body.name,
-        description: body.description,
-        image: body.image,
-        price: parseFloat(body.price),
-        categoryId: body.categoryId,
+        description: body.description || '',
+        image: body.image || null,
+        price: parseFloat(body.price) || 0,
+        categoryId: parseInt(body.categoryId),
         active: body.active !== undefined ? body.active : true,
         popular: body.popular || false,
         hasSizes: body.hasSizes || false,
@@ -78,10 +98,13 @@ export async function POST(request) {
       include: { sizes: true }
     });
     
+    console.log('Meal created:', meal.id);
     return NextResponse.json(meal);
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: 'Failed to save meal' }, { status: 500 });
+    console.error('POST /api/meals error:', error);
+    return NextResponse.json({ 
+      error: 'فشل في حفظ الوجبة: ' + (error.message || 'خطأ غير معروف')
+    }, { status: 500 });
   }
 }
 

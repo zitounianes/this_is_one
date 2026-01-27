@@ -1,37 +1,5 @@
-
-// (Keep top part same) ...
-model Order {
-  id             Int         @id @default(autoincrement())
-  customerName   String
-  customerPhone  String
-  customerAddress String?
-  location       String?     
-  total          Float
-  subtotal       Float       @default(0) // Added
-  deliveryCost   Float       @default(0) // Added
-  status         String      @default("pending")
-  orderType      String      @default("delivery") // Added
-  notes          String?     // Added
-  rating         Int?        // Added
-  review         String?     // Added
-  items          OrderItem[]
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
-}
-// ... (Keep existing OrderItem and others) ...
-model OrderItem {
-  id        Int      @id @default(autoincrement())
-  orderId   Int
-  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  mealId    Int
-  mealName  String
-  quantity  Int
-  price     Float
-  size      String?
-}
-
-// ... Rest of models (Category, Meal, MealSize, Settings) must actally be included for valid schema
-// Since I'm overwriting, I must include EVERYTHING.
+// Prisma Schema for Restaurant Management System
+// Compatible with Supabase (PostgreSQL)
 
 datasource db {
   provider = "postgresql"
@@ -42,59 +10,119 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// ============================================
+// CATEGORIES
+// ============================================
 model Category {
   id        Int      @id @default(autoincrement())
   name      String
-  icon      String
+  icon      String   @default("📁")
   order     Int      @default(0)
   active    Boolean  @default(true)
   meals     Meal[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("categories")
 }
 
+// ============================================
+// MEALS
+// ============================================
 model Meal {
-  id          Int       @id @default(autoincrement())
-  categoryId  Int
-  category    Category  @relation(fields: [categoryId], references: [id])
+  id          Int        @id @default(autoincrement())
+  categoryId  Int        @map("category_id")
+  category    Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   name        String
   description String?
-  image       String?
-  price       Float
-  active      Boolean   @default(true)
-  popular     Boolean   @default(false)
-  order       Int       @default(0)
-  hasSizes    Boolean   @default(false)
+  image       String?    @db.Text
+  price       Float      @default(0)
+  active      Boolean    @default(true)
+  popular     Boolean    @default(false)
+  order       Int        @default(0)
+  hasSizes    Boolean    @default(false) @map("has_sizes")
   sizes       MealSize[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
+  @@map("meals")
 }
 
+// ============================================
+// MEAL SIZES
+// ============================================
 model MealSize {
   id     Int    @id @default(autoincrement())
-  mealId Int
+  mealId Int    @map("meal_id")
   meal   Meal   @relation(fields: [mealId], references: [id], onDelete: Cascade)
   name   String
   price  Float
+
+  @@map("meal_sizes")
 }
 
+// ============================================
+// ORDERS
+// ============================================
+model Order {
+  id              Int         @id @default(autoincrement())
+  customerName    String      @map("customer_name")
+  customerPhone   String      @map("customer_phone")
+  customerAddress String?     @map("customer_address")
+  location        String?     @db.Text
+  total           Float
+  subtotal        Float       @default(0)
+  deliveryCost    Float       @default(0) @map("delivery_cost")
+  status          String      @default("pending")
+  orderType       String      @default("delivery") @map("order_type")
+  notes           String?     @db.Text
+  rating          Int?
+  review          String?     @db.Text
+  items           OrderItem[]
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
+
+  @@map("orders")
+}
+
+// ============================================
+// ORDER ITEMS
+// ============================================
+model OrderItem {
+  id       Int    @id @default(autoincrement())
+  orderId  Int    @map("order_id")
+  order    Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  mealId   Int    @map("meal_id")
+  mealName String @map("meal_name")
+  quantity Int
+  price    Float
+  size     String?
+
+  @@map("order_items")
+}
+
+// ============================================
+// SETTINGS
+// ============================================
 model Settings {
-  id               Int     @id @default(1)
-  restaurantName   String  @default("مطعمي")
-  phone            String  @default("0555123456")
-  address          String  @default("الجزائر العاصمة")
-  currency         String  @default("دج")
-  isOpen           Boolean @default(true)
-  allowPreOrders   Boolean @default(true)
-  minPreOrderHours Int     @default(1)
-  maxPreOrderHours Int     @default(24)
-  openTime         String  @default("10:00")
-  closeTime        String  @default("23:00")
-  deliveryEnabled  Boolean @default(true)
-  deliveryType     String  @default("fixed")
-  deliveryFixedCost Float  @default(200)
-  deliveryFreeAbove Float  @default(2000)
-  deliveryCostPerKm Float  @default(50)
-  deliveryMaxDistance Float @default(15)
-  adminPassword    String  @default("admin123")
+  id                  Int     @id @default(1)
+  restaurantName      String  @default("مطعمي") @map("restaurant_name")
+  phone               String  @default("0555123456")
+  address             String  @default("الجزائر العاصمة")
+  currency            String  @default("دج")
+  isOpen              Boolean @default(true) @map("is_open")
+  allowPreOrders      Boolean @default(true) @map("allow_pre_orders")
+  minPreOrderHours    Int     @default(1) @map("min_pre_order_hours")
+  maxPreOrderHours    Int     @default(24) @map("max_pre_order_hours")
+  openTime            String  @default("10:00") @map("open_time")
+  closeTime           String  @default("23:00") @map("close_time")
+  deliveryEnabled     Boolean @default(true) @map("delivery_enabled")
+  deliveryType        String  @default("fixed") @map("delivery_type")
+  deliveryFixedCost   Float   @default(200) @map("delivery_fixed_cost")
+  deliveryFreeAbove   Float   @default(2000) @map("delivery_free_above")
+  deliveryCostPerKm   Float   @default(50) @map("delivery_cost_per_km")
+  deliveryMaxDistance Float   @default(15) @map("delivery_max_distance")
+  adminPassword       String  @default("admin123") @map("admin_password")
+
+  @@map("settings")
 }

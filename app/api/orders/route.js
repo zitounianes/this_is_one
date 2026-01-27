@@ -11,6 +11,7 @@ export async function GET() {
     });
     return NextResponse.json(orders);
   } catch (error) {
+    console.error('GET /api/orders error:', error);
     return NextResponse.json({ error: 'Failed to fetch orders' }, { status: 500 });
   }
 }
@@ -19,36 +20,40 @@ export async function POST(request) {
   try {
     const body = await request.json();
     
+    console.log('POST /api/orders - creating order for:', body.customerName);
+
     const order = await prisma.order.create({
       data: {
         customerName: body.customerName,
         customerPhone: body.customerPhone,
-        customerAddress: body.address || body.customerAddress, // Map 'address' to schema
-        location: body.location ? JSON.stringify(body.location) : '',
-        total: body.total || 0,
-        subtotal: body.subtotal || 0, // Add to schema if missing or map correctly
-        deliveryCost: body.deliveryCost || 0,
-        status: 'new',
+        customerAddress: body.customerAddress || body.address || '',
+        location: body.location ? (typeof body.location === 'string' ? body.location : JSON.stringify(body.location)) : '',
+        total: parseFloat(body.total) || 0,
+        subtotal: parseFloat(body.subtotal) || 0,
+        deliveryCost: parseFloat(body.deliveryCost) || 0,
+        status: body.status || 'new',
         orderType: body.orderType || 'delivery',
-        notes: body.notes,
-        status: body.status || 'new', // Allow setting status if needed
+        notes: body.notes || '',
         items: {
           create: body.items.map(item => ({
-            mealId: item.mealId || item.id,
+            mealId: parseInt(item.mealId || item.id),
             mealName: item.name || item.mealName || 'Unknown',
-            quantity: item.quantity,
-            price: item.price,
-            size: item.sizeName
+            quantity: parseInt(item.quantity),
+            price: parseFloat(item.price),
+            size: item.sizeName || item.size || ''
           }))
         }
       },
       include: { items: true }
     });
     
+    console.log('Order created successfully:', order.id);
     return NextResponse.json(order);
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: 'Failed to create order' }, { status: 500 });
+    console.error('POST /api/orders error:', error);
+    return NextResponse.json({ 
+      error: 'Failed to create order: ' + (error.message || 'Unknown error') 
+    }, { status: 500 });
   }
 }
 
@@ -59,28 +64,22 @@ export async function PUT(request) {
 
         if (!id) return NextResponse.json({error: 'ID required'}, {status: 400});
 
+        console.log(`PUT /api/orders - updating order ${id}`, { status, rating });
+
         const data = {};
         if (status) data.status = status;
-        if (rating) data.rating = rating; // Need to add to schema!
-        if (review) data.review = review; // Need to add to schema!
-
-        // If schema doesn't have rating/review yet, this might fail unless updated.
-        // My previous schema didn't have rating/review. I should update schema.prisma first!
-        // But for "No errors", let's be careful.
-        // I will update schema.prisma in next step to be sure.
+        if (rating !== undefined) data.rating = parseInt(rating);
+        if (review !== undefined) data.review = review;
         
         const order = await prisma.order.update({
             where: { id: parseInt(id) },
-            data: {
-                ...(status && { status }),
-                ...(rating && { rating: parseInt(rating) }),
-                ...(review !== undefined && { review }) // Allow empty string reviews
-            }
+            data: data
         });
         
         return NextResponse.json(order);
     } catch (error) {
-        return NextResponse.json({ error: 'Update failed' }, { status: 500 });
+        console.error('PUT /api/orders error:', error);
+        return NextResponse.json({ error: 'Update failed: ' + error.message }, { status: 500 });
     }
 }
 
@@ -93,7 +92,9 @@ export async function DELETE(request) {
     try {
         await prisma.order.delete({ where: { id: parseInt(id) } });
         return NextResponse.json({ success: true });
-    } catch (e) {
+    } catch (error) {
+        console.error('DELETE /api/orders error:', error);
         return NextResponse.json({ error: 'Delete failed' }, { status: 500 });
     }
 }
+
