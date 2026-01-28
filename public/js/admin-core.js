@@ -60,12 +60,14 @@ function setupAdminNavigation() {
 /**
  * Smart Navigation: Fetch content via AJAX and swap without reload
  */
+/**
+ * Smart Navigation: Fetch content via AJAX and swap without reload
+ */
 async function spaNavigate(url, pushState = true) {
     if (window.location.pathname.endsWith(url)) return;
     
-    // 1. Exit Animation: Blur & Dim current content
-    const mainContent = document.querySelector('.main-content');
-    if (mainContent) mainContent.classList.add('loading-state');
+    // 1. Show Lightweight SPA Loader (Instant Feedback)
+    showSpaLoader();
 
     try {
         const response = await fetch(url);
@@ -89,35 +91,27 @@ async function spaNavigate(url, pushState = true) {
 
         // 6. Swap Content
         const newMainContent = doc.querySelector('.main-content');
-        if (newMainContent && mainContent) {
-            mainContent.innerHTML = newMainContent.innerHTML;
+        const currentMainContent = document.querySelector('.main-content');
+        
+        if (newMainContent && currentMainContent) {
+            currentMainContent.innerHTML = newMainContent.innerHTML;
             window.scrollTo(0, 0);
-            
-            // 7. Entry Animation: Snap in with Spring
-            mainContent.classList.remove('loading-state'); // Remove exit blur
-            mainContent.classList.add('animate-modern-entry'); // Trigger entry spring
-            
-            // Remove animation class after it finishes to be clean
-            setTimeout(() => {
-                mainContent.classList.remove('animate-modern-entry');
-            }, 600);
-            
         } else {
             // Fallback: If structure doesn't match, force full reload
             window.location.href = url;
             return;
         }
 
-        // 8. Swap Modals
+        // 7. Swap Modals
         document.querySelectorAll('.modal-overlay').forEach(m => m.remove());
         doc.querySelectorAll('.modal-overlay').forEach(m => {
             document.body.appendChild(m);
         });
 
-        // 9. Highlight active sidebar item
+        // 8. Highlight active sidebar item
         highlightSidebar();
 
-        // 10. Load and Execute Page-Specific Scripts
+        // 9. Load and Execute Page-Specific Scripts
         const scripts = doc.querySelectorAll('script');
         for (const script of scripts) {
              // Handle External Scripts (Libraries like Chart.js)
@@ -145,13 +139,13 @@ async function spaNavigate(url, pushState = true) {
         // Trigger init for new scripts
         document.dispatchEvent(new Event('DOMContentLoaded'));
 
-        // 11. Update timestamps or other core UI elements
+        // 10. Update timestamps or other core UI elements
         const pageTitle = document.getElementById('pageTitle');
         if (pageTitle && doc.getElementById('pageTitle')) {
             pageTitle.innerText = doc.getElementById('pageTitle').innerText;
         }
 
-        // 12. Close sidebar on mobile
+        // 11. Close sidebar on mobile
         const sidebar = document.getElementById('sidebar');
         if (sidebar) sidebar.classList.remove('open');
 
@@ -159,12 +153,39 @@ async function spaNavigate(url, pushState = true) {
         console.error('Navigation error:', error);
         window.location.href = url;
     } finally {
-        // Fallback cleanup if something went wrong
-        if (mainContent) {
-            setTimeout(() => {
-                mainContent.classList.remove('loading-state');
-            }, 50);
-        }
+        // Hide Loader
+        hideSpaLoader();
+    }
+}
+
+/**
+ * Lightweight SPA Loader Controllers
+ */
+function ensureSpaLoader() {
+    let loader = document.getElementById('spa-loader');
+    if (!loader) {
+        loader = document.createElement('div');
+        loader.id = 'spa-loader';
+        loader.innerHTML = '<div class="simple-spinner"></div>';
+        document.body.appendChild(loader);
+    }
+    return loader;
+}
+
+function showSpaLoader() {
+    const loader = ensureSpaLoader();
+    // Force reflow
+    loader.offsetHeight;
+    loader.classList.add('active');
+}
+
+function hideSpaLoader() {
+    const loader = document.getElementById('spa-loader');
+    if (loader) {
+        // Small buffer to prevent flickering
+        setTimeout(() => {
+            loader.classList.remove('active');
+        }, 100);
     }
 }
 
