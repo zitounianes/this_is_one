@@ -542,25 +542,34 @@ body {
    CARDS & STATS (PREMIUM LOOK)
    ======================== */
 
-.stat-card-soft, .content-card, .rating-card-modern, .settings-card {
+/* ========================
+   CARDS & STATS (PREMIUM LOOK)
+   ======================== */
+
+.stat-card-soft, .content-card, .rating-card-modern, .settings-card, .chart-section, .action-orders-section {
     background: var(--bg-surface);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-card);
-    border: 1px solid rgba(0,0,0,0.02);
+    border: 1px solid rgba(0,0,0,0.03);
     transition: transform 0.3s var(--transition-smooth), box-shadow 0.3s;
+    position: relative;
+    overflow: hidden;
 }
 
 [data-theme="dark"] .stat-card-soft, 
 [data-theme="dark"] .content-card,
 [data-theme="dark"] .rating-card-modern,
-[data-theme="dark"] .settings-card {
+[data-theme="dark"] .settings-card,
+[data-theme="dark"] .chart-section,
+[data-theme="dark"] .action-orders-section {
     background: var(--bg-surface);
-    border-color: rgba(255,255,255,0.03);
+    border-color: rgba(255,255,255,0.05);
 }
 
-.stat-card-soft:hover, .content-card:hover { /* Hover effect */
+.stat-card-soft:hover, .content-card:hover, .chart-section:hover, .action-orders-section:hover {
     transform: translateY(-4px);
     box-shadow: var(--shadow-float);
+    border-color: rgba(249, 115, 22, 0.1);
 }
 
 /* Unified Stat Card Style */
@@ -568,37 +577,159 @@ body {
     padding: 24px;
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 20px;
+}
+
+/* Decorative background blur shape */
+.stat-card-soft::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(circle, var(--primary-soft) 0%, transparent 70%);
+    opacity: 0.5;
+    z-index: 0;
+    pointer-events: none;
 }
 
 .stat-icon-soft {
-    width: 56px;
-    height: 56px;
-    border-radius: 18px;
+    width: 64px;
+    height: 64px;
+    border-radius: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
+    font-size: 1.6rem;
+    position: relative;
+    z-index: 1;
+    transition: transform 0.3s var(--transition-smooth);
 }
 
-/* Specific Colors for Icons */
-.total-icon     { background: #DBEAFE; color: #2563EB; }
-.preparing-icon { background: #FFEDD5; color: #EA580C; }
-.ready-icon     { background: #D1FAE5; color: #059669; }
-.revenue-icon   { background: #F3E8FF; color: #9333EA; }
-.month-icon     { background: #FCE7F3; color: #DB2777; }
+.stat-card-soft:hover .stat-icon-soft {
+    transform: scale(1.1) rotate(5deg);
+}
 
-/* Dark mode adjustments for icons */
-[data-theme="dark"] .total-icon     { background: rgba(37, 99, 235, 0.2); }
-[data-theme="dark"] .preparing-icon { background: rgba(234, 88, 12, 0.2); }
-[data-theme="dark"] .ready-icon     { background: rgba(5, 150, 105, 0.2); }
-[data-theme="dark"] .revenue-icon   { background: rgba(147, 51, 234, 0.2); }
-[data-theme="dark"] .month-icon     { background: rgba(219, 39, 119, 0.2); }
+/* Specific Colors for Icons (Using softer pastels for background) */
+.total-icon     { background: #EFF6FF; color: #3B82F6; }
+.preparing-icon { background: #FFF7ED; color: #F97316; }
+.ready-icon     { background: #ECFDF5; color: #10B981; }
+.revenue-icon   { background: #FAF5FF; color: #8B5CF6; }
+.month-icon     { background: #FDF2F8; color: #EC4899; }
+
+/* Dark mode icon adjustments */
+[data-theme="dark"] .total-icon     { background: rgba(59, 130, 246, 0.15); color: #60A5FA; }
+[data-theme="dark"] .preparing-icon { background: rgba(249, 115, 22, 0.15); color: #FB923C; }
+[data-theme="dark"] .ready-icon     { background: rgba(16, 185, 129, 0.15); color: #34D399; }
+[data-theme="dark"] .revenue-icon   { background: rgba(139, 92, 246, 0.15); color: #A78BFA; }
+[data-theme="dark"] .month-icon     { background: rgba(236, 72, 153, 0.15); color: #F472B6; }
 
 .stat-content {
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
 }
+
+/* ========================
+   DASHBOARD WIDGETS (CHART & LISTS)
+   ======================== */
+
+/* Section Headers inside Widgets */
+.section-header-simple h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: -0.5px;
+}
+
+/* Chart Container */
+.chart-section {
+    padding: 32px;
+    margin-top: 32px;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.chart-container {
+    flex: 1;
+    position: relative;
+    width: 100%;
+}
+
+/* Top Selling List Container */
+.action-orders-section {
+    padding: 32px;
+    margin-top: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.action-orders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Top Selling Item Card */
+.action-order-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    background: var(--bg-body);
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+    transition: all 0.2s var(--transition-smooth);
+}
+
+[data-theme="dark"] .action-order-card {
+    background: rgba(255,255,255,0.03);
+}
+
+.action-order-card:hover {
+    background: var(--bg-surface);
+    transform: translateX(-4px);
+    box-shadow: var(--shadow-sm);
+    border-color: rgba(0,0,0,0.05);
+}
+
+[data-theme="dark"] .action-order-card:hover {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.1);
+}
+
+.action-card-info {
+    display: flex;
+    font-size: 1.2rem;
+    font-weight: 800;
+}
+
+.action-details {
+    flex: 1;
+    margin: 0 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* Status Badge in List */
+.action-status {
+    padding: 4px 12px;
+    border-radius: var(--radius-pill);
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
 
 .stat-value {
     font-size: 1.75rem;
