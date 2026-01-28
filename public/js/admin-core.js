@@ -23,6 +23,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadSidebar();
     highlightSidebar();
     
+    // Hide Loader (Initial Load)
+    const loader = document.getElementById('pageLoader');
+    if (loader) {
+        setTimeout(() => {
+            loader.style.opacity = '0';
+            setTimeout(() => {
+                loader.style.display = 'none';
+                loader.classList.remove('active');
+            }, 400);
+        }, 500); // Slight delay to let user see the cool rocket
+    }
+    
     // Listen for browser back/forward buttons
     window.addEventListener('popstate', (event) => {
         if (event.state && event.state.url) {

@@ -2753,7 +2753,7 @@ input:focus + .slider {
     z-index: 99999;
     background: rgba(15, 23, 42, 0.85); /* Dark semi-transparent */
     backdrop-filter: blur(15px); /* Strong blur for premium feel */
-    display: none; /* JS toggles to flex */
+    display: flex; /* Visible by default for initial load */
     align-items: center;
     justify-content: center;
     transition: opacity 0.4s ease;
