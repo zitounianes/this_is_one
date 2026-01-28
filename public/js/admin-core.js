@@ -63,12 +63,12 @@ function setupAdminNavigation() {
 async function spaNavigate(url, pushState = true) {
     if (window.location.pathname.endsWith(url)) return;
     
-    const loader = document.getElementById('pageLoader');
-    if (loader) {
-        loader.classList.add('active');
-        loader.style.display = 'flex';
-        loader.style.opacity = '1';
-    }
+    // Start sleek top bar
+    initNProgress();
+    
+    // Subtle content fade
+    const mainContent = document.querySelector('.main-content');
+    if (mainContent) mainContent.classList.add('page-loading');
 
     try {
         const response = await fetch(url);
@@ -92,10 +92,8 @@ async function spaNavigate(url, pushState = true) {
 
         // 6. Swap Content
         const newMainContent = doc.querySelector('.main-content');
-        const currentMainContent = document.querySelector('.main-content');
-        
-        if (newMainContent && currentMainContent) {
-            currentMainContent.innerHTML = newMainContent.innerHTML;
+        if (newMainContent && mainContent) {
+            mainContent.innerHTML = newMainContent.innerHTML;
             window.scrollTo(0, 0);
         } else {
             // Fallback: If structure doesn't match (e.g. login page, error), force full reload
@@ -154,15 +152,66 @@ async function spaNavigate(url, pushState = true) {
         console.error('Navigation error:', error);
         window.location.href = url;
     } finally {
+        // Finish sleek bar
+        finishNProgress();
+        
+        if (mainContent) {
+            // Slight delay to ensure DOM is ready before removing fade
+            setTimeout(() => {
+                mainContent.classList.remove('page-loading');
+            }, 50);
+        }
+    }
+}
+
+/**
+ * Top Progress Bar Logic (Light & Professional)
+ */
+function initNProgress() {
+    // Inject if missing
+    let container = document.getElementById('nprogress');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'nprogress';
+        container.innerHTML = '<div class="bar"></div>';
+        document.body.appendChild(container);
+    }
+    
+    // Show & Reset
+    container.classList.add('active');
+    const bar = container.querySelector('.bar');
+    if (bar) {
+        bar.style.transition = 'none';
+        bar.style.transform = 'scaleX(0)';
+        
+        // Force reflow
+        bar.offsetHeight; 
+        
+        // Start animation to 70%
+        bar.style.transition = 'transform 10s cubic-bezier(0.1, 0.5, 0, 1)'; // Slow trickle
+        bar.style.transform = 'scaleX(0.7)';
+    }
+}
+
+function finishNProgress() {
+    const container = document.getElementById('nprogress');
+    if (!container) return;
+    
+    const bar = container.querySelector('.bar');
+    if (bar) {
+        // Zip to 100%
+        bar.style.transition = 'transform 0.2s ease-out';
+        bar.style.transform = 'scaleX(1)';
+        
+        // Fade out after completion
         setTimeout(() => {
-            if (loader) {
-                loader.style.opacity = '0';
-                setTimeout(() => {
-                    loader.style.display = 'none';
-                    loader.classList.remove('active');
-                }, 400);
-            }
-        }, 300);
+            container.classList.remove('active');
+            // Reset after fade
+            setTimeout(() => {
+                bar.style.transition = 'none';
+                bar.style.transform = 'scaleX(0)';
+            }, 200);
+        }, 200);
     }
 }
 
