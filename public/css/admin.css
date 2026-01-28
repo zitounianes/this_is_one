@@ -2502,8 +2502,9 @@ input:focus + .slider {
 /* Section Entry Animation */
 /* Section Entry Animation - Optimized for Speed & Feel */
 .section-animate {
-    animation: sectionQuickSlide 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-    will-change: transform, opacity;
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
 }
 
 @keyframes sectionQuickSlide {
@@ -2539,9 +2540,10 @@ input:focus + .slider {
 }
 
 /* Stagger List Elements (e.g., Orders) */
+/* Stagger List Elements (e.g., Orders) - Disabled for instant load */
 .order-card-row, .meal-card-admin, .category-card-new {
-    animation: fadeInUp 0.5s ease-out forwards;
-    opacity: 0;
+    animation: none !important;
+    opacity: 1 !important;
 }
 
 /* ========================
