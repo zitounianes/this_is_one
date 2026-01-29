@@ -1,0 +1,43 @@
+/* =========================================
+   CIRCLE REVEAL TRANSITION
+   ========================================= */
+.circle-transition-overlay {
+    position: fixed;
+    top: 0; left: 0; 
+    width: 100vw; height: 100vh;
+    background-color: var(--primary); /* Vibrant Orange */
+    z-index: 9999;
+    pointer-events: none;
+    clip-path: circle(0% at 50% 50%);
+    opacity: 0;
+    transition: opacity 0.1s;
+}
+
+.circle-transition-overlay.active {
+    opacity: 1;
+    animation: circleReveal 0.8s cubic-bezier(0.645, 0.045, 0.355, 1.000) forwards;
+}
+
+/* Reverse animation for exit */
+.circle-transition-overlay.exit {
+    opacity: 1;
+    animation: circleRevealExit 0.6s cubic-bezier(0.645, 0.045, 0.355, 1.000) forwards;
+}
+
+@keyframes circleReveal {
+    0% { clip-path: circle(0% at 50% 50%); }
+    100% { clip-path: circle(150% at 50% 50%); } 
+}
+
+@keyframes circleRevealExit {
+    0% { clip-path: circle(150% at 50% 50%); } 
+    100% { clip-path: circle(0% at 50% 50%); }
+}
+
+/* Ensure content loads cleanly behind it */
+.main-content {
+    transition: opacity 0.3s ease;
+}
+.main-content.is-loading {
+    opacity: 0;
+}

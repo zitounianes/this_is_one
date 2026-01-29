@@ -61,14 +61,25 @@ function setupAdminNavigation() {
  * Smart Navigation: Fetch content via AJAX and swap without reload
  */
 /**
- * Smart Navigation: Fetch content via AJAX and swap without reload
+ * Smart Navigation: Fetch content via AJAX with Circle Reveal Transition
  */
 async function spaNavigate(url, pushState = true) {
     if (window.location.pathname.endsWith(url)) return;
-    
-    // 1. Professional Transition: Dim & Desaturate current content
-    const mainContent = document.querySelector('.main-content');
-    if (mainContent) mainContent.classList.add('is-loading');
+
+    // 1. Create Overlay if missing
+    let overlay = document.querySelector('.circle-transition-overlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.className = 'circle-transition-overlay';
+        document.body.appendChild(overlay);
+    }
+
+    // 2. Start Transition (Cover Screen)
+    overlay.classList.remove('exit');
+    overlay.classList.add('active');
+
+    // Wait for half circle animation to cover screen (approx 600ms safety)
+    await new Promise(r => setTimeout(r, 600));
 
     try {
         const response = await fetch(url);
@@ -76,27 +87,26 @@ async function spaNavigate(url, pushState = true) {
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
 
-        // 2. Cleanup old page (intervals, charts)
+        // 3. Cleanup old page (intervals, charts)
         cleanupPage();
 
-        // 3. Update Title
+        // 4. Update Title & State
         document.title = doc.title;
-
-        // 4. Update URL
         if (pushState) {
             history.pushState({ url }, doc.title, url);
         }
 
-        // 5. Inject CSS explicitly (Fix for Settings/Dashboard designs)
+        // 5. Inject Styles
         await injectMissingStyles(doc);
 
-        // 6. Swap Content
+        // 6. Swap Content (Behind the curtain)
+        const mainContent = document.querySelector('.main-content');
         const newMainContent = doc.querySelector('.main-content');
+        
         if (newMainContent && mainContent) {
             mainContent.innerHTML = newMainContent.innerHTML;
             window.scrollTo(0, 0);
         } else {
-            // Fallback: If structure doesn't match, force full reload
             window.location.href = url;
             return;
         }
@@ -107,44 +117,37 @@ async function spaNavigate(url, pushState = true) {
             document.body.appendChild(m);
         });
 
-        // 8. Highlight active sidebar item
+        // 8. Highlight Sidebar
         highlightSidebar();
 
-        // 9. Load and Execute Page-Specific Scripts
+        // 9. Re-run Scripts
         const scripts = doc.querySelectorAll('script');
         for (const script of scripts) {
-             // Handle External Scripts (Libraries like Chart.js)
              if (script.src) {
-                 // Check if it's already in the DOM
                  const exists = document.querySelector(`script[src="${script.src}"]`);
-                 
-                 // If not present, load it (e.g. Chart.js when coming from Orders page)
                  if (!exists) {
                      await loadScript(script.src);
                  } else {
-                     // If present but it's a page logic script, we MUST re-run it
                      if (script.src.includes('admin-') && !script.src.includes('admin-core.js')) {
                          await reInjectScript(script.src);
                      }
                  }
              } else if (script.innerText.trim().length > 0) {
-                 // Execute inline script
                  const newScript = document.createElement('script');
                  newScript.innerText = script.innerText;
                  document.body.appendChild(newScript);
              }
         }
         
-        // Trigger init for new scripts
         document.dispatchEvent(new Event('DOMContentLoaded'));
 
-        // 10. Update timestamps or other core UI elements
+        // 10. Update UI Elements
         const pageTitle = document.getElementById('pageTitle');
         if (pageTitle && doc.getElementById('pageTitle')) {
             pageTitle.innerText = doc.getElementById('pageTitle').innerText;
         }
 
-        // 11. Close sidebar on mobile
+        // 11. Close Sidebar
         const sidebar = document.getElementById('sidebar');
         if (sidebar) sidebar.classList.remove('open');
 
@@ -152,13 +155,17 @@ async function spaNavigate(url, pushState = true) {
         console.error('Navigation error:', error);
         window.location.href = url;
     } finally {
-        // Remove dimming effect
-        if (mainContent) {
-            // Small buffer for smoothness
+        // 12. Reveal New Page (Uncover)
+        // Give a tiny buffer for DOM to settle, then exit
+        setTimeout(() => {
+            overlay.classList.add('exit');
+            overlay.classList.remove('active');
+            
+            // Cleanup class after animation
             setTimeout(() => {
-                mainContent.classList.remove('is-loading');
-            }, 50);
-        }
+                overlay.classList.remove('exit');
+            }, 600);
+        }, 100);
     }
 }
 

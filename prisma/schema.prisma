@@ -24,6 +24,7 @@ model Category {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("categories")
+  @@index([active, order])
 }
 
 // ============================================
@@ -46,6 +47,9 @@ model Meal {
   updatedAt   DateTime   @updatedAt @map("updated_at")
 
   @@map("meals")
+  @@index([categoryId])
+  @@index([active, order])
+  @@index([popular])
 }
 
 // ============================================
@@ -59,6 +63,7 @@ model MealSize {
   price  Float
 
   @@map("meal_sizes")
+  @@index([mealId])
 }
 
 // ============================================
@@ -83,6 +88,9 @@ model Order {
   updatedAt       DateTime    @updatedAt @map("updated_at")
 
   @@map("orders")
+  @@index([status])
+  @@index([createdAt])
+  @@index([customerPhone])
 }
 
 // ============================================
@@ -99,6 +107,7 @@ model OrderItem {
   size     String?
 
   @@map("order_items")
+  @@index([orderId])
 }
 
 // ============================================
