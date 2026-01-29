@@ -72,6 +72,29 @@
 }
 
 /* ========================
+   PERFORMANCE OPTIMIZATIONS
+   ======================== */
+   
+/* Force hardware acceleration for smoother animations */
+.main-content, .sidebar {
+    transform: translateZ(0); 
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+/* Skip coloring off-screen content (HUGE for heavy lists) */
+.orders-grid, .meals-grid, .data-table, tbody {
+    content-visibility: auto;
+    contain-intrinsic-size: 1000px; /* Approximate height to prevent scrollbar jumping */
+}
+
+/* Isolate layouts for independent rendering */
+.card, .stat-card, .order-card {
+    contain: content;
+}
+
+/* Optimize shadows: removed on scroll for performance if needed, but keeping smooth here */
+/* ========================
    GLOBAL RESET & TYPOGRAPHY
    ======================== */
 * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }

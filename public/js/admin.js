@@ -171,81 +171,89 @@ function showSection(sectionId) {
 
     // Show Loader
     const loader = document.getElementById('pageLoader');
-    if (loader) loader.style.display = 'flex';
+    if (loader) {
+        loader.style.opacity = '1';
+        loader.style.display = 'flex';
+    }
 
-    // Use a short timeout to let the beautiful rocket animation play briefly
-    setTimeout(() => {
-        // Hide all sections
-        const sections = ['dashboard', 'orders', 'meals', 'categories', 'settings', 'ratings'];
-        sections.forEach(s => {
-            const el = document.getElementById(`section-${s}`);
-            if (el) el.style.display = 'none';
+    // Optimization: Use Double RequestAnimationFrame to allow Loader to render FIRST
+    // Then immediately switch, eliminating artificial 450ms delay.
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+             // Hide all sections
+            const sections = ['dashboard', 'orders', 'meals', 'categories', 'settings', 'ratings'];
+            sections.forEach(s => {
+                const el = document.getElementById(`section-${s}`);
+                if (el) el.style.display = 'none';
+                
+                // Update Nav
+                const navItem = document.getElementById(`nav-${s}`);
+                if (navItem) navItem.classList.remove('active');
+            });
+            
+            // Show target
+            const target = document.getElementById(`section-${sectionId}`);
+            if (target) {
+                target.style.display = 'block';
+                // Trigger optimized entry animation
+                target.classList.remove('section-animate');
+                void target.offsetWidth; // Force reflow
+                target.classList.add('section-animate'); // CSS Animation handles the slide-up
+            }
             
             // Update Nav
-            const navItem = document.getElementById(`nav-${s}`);
-            if (navItem) navItem.classList.remove('active');
+            const activeNav = document.getElementById(`nav-${sectionId}`);
+            if (activeNav) activeNav.classList.add('active');
+            
+            // Update Title
+            const titles = {
+                'dashboard': 'الرئيسية',
+                'orders': 'الطلبات',
+                'meals': 'إدارة الوجبات',
+                'categories': 'الأقسام',
+                'settings': 'الإعدادات',
+                'ratings': 'تقييمات العملاء'
+            };
+            const titleEl = document.getElementById('pageTitle');
+            if (titleEl) titleEl.textContent = titles[sectionId] || 'لوحة التحكم';
+            
+            // Refresh Data (Now optimized to be fast)
+            try {
+                if (sectionId === 'dashboard') requestIdleCallback(() => initDashboard());
+                else if (sectionId === 'orders') renderOrders(); // Keep renderOrders sync for perceived speed
+                else if (sectionId === 'meals') requestIdleCallback(() => initMealsPage());
+                else if (sectionId === 'categories') requestIdleCallback(() => renderCategories()); 
+                else if (sectionId === 'settings') {
+                        if (typeof loadSettings === 'function') loadSettings();
+                }
+                else if (sectionId === 'ratings') {
+                    renderRatedOrders();
+                    markRatingsAsSeen(); 
+                }
+            } catch (e) {
+                console.error('Error rendering section:', e);
+            }
+
+            currentSection = sectionId;
+            
+            // Mobile: Close sidebar after selection
+            if (window.innerWidth <= 1024) {
+                const sidebar = document.getElementById('sidebar');
+                if(sidebar) sidebar.classList.remove('open');
+            }
+
+            // Hide Loader Immediately for "Fast" feel
+            if (loader) {
+                // Small delay (200ms) only to ensure smooth wipe, not 450ms
+                setTimeout(() => {
+                    loader.style.opacity = '0';
+                    setTimeout(() => {
+                        loader.style.display = 'none';
+                    }, 300); 
+                }, 200);
+            }
         });
-        
-        // Show target
-        const target = document.getElementById(`section-${sectionId}`);
-        if (target) {
-            target.style.display = 'block';
-            // Trigger optimized entry animation
-            target.classList.remove('section-animate');
-            void target.offsetWidth; // Force reflow
-            target.classList.add('section-animate');
-        }
-        
-        // Update Nav
-        const activeNav = document.getElementById(`nav-${sectionId}`);
-        if (activeNav) activeNav.classList.add('active');
-        
-        // Update Title
-        const titles = {
-            'dashboard': 'الرئيسية',
-            'orders': 'الطلبات',
-            'meals': 'إدارة الوجبات',
-            'categories': 'الأقسام',
-            'settings': 'الإعدادات',
-            'ratings': 'تقييمات العملاء'
-        };
-        const titleEl = document.getElementById('pageTitle');
-        if (titleEl) titleEl.textContent = titles[sectionId] || 'لوحة التحكم';
-        
-        // Refresh Data
-        try {
-            if (sectionId === 'dashboard') initDashboard();
-            if (sectionId === 'orders') renderOrders();
-            if (sectionId === 'meals') initMealsPage();
-            if (sectionId === 'categories') renderCategories(); 
-            if (sectionId === 'settings') {
-                    if (typeof loadSettings === 'function') loadSettings();
-            }
-            if (sectionId === 'ratings') {
-                renderRatedOrders();
-                markRatingsAsSeen(); 
-            }
-        } catch (e) {
-            console.error('Error rendering section:', e);
-        }
-
-        currentSection = sectionId;
-        
-        // Mobile: Close sidebar after selection
-        if (window.innerWidth <= 1024) {
-            const sidebar = document.getElementById('sidebar');
-            if(sidebar) sidebar.classList.remove('open');
-        }
-
-        // Hide Loader smoothly
-        if (loader) {
-            loader.style.opacity = '0';
-            setTimeout(() => {
-                loader.style.display = 'none';
-                loader.style.opacity = '1';
-            }, 400); 
-        }
-    }, 450); // 450ms is perfect: feels like a fast load, not a lag.
+    });
 }
 
 // =====================================================
@@ -267,31 +275,41 @@ async function initDashboard() {
         loadTopSellingMealsList();
     }
     
-    // Auto-refresh orders every 2 seconds (Near Real-time)
+    // Auto-refresh orders every 10 seconds (optimized for performance)
     if (!window.ordersPollInterval) {
         window.ordersPollInterval = setInterval(async () => {
+            // Performance: Don't poll if tab is backgrounded
+            if (document.hidden) return;
+
             if (typeof refreshOrders === 'function') {
-                const oldOrders = JSON.stringify(getOrders());
-                await refreshOrders();
-                const newOrders = getOrders();
+                // Lightweight check attempt before heavy diff
+                const currentOrders = getOrders();
+                const preCheck = { len: currentOrders.length, topId: currentOrders[0]?.id, topStatus: currentOrders[0]?.status };
                 
-                // Only update DOM if data changed to avoid flickering
-                // Only update DOM if data changed to avoid flickering
-                if (JSON.stringify(newOrders) !== oldOrders) {
-                    loadDashboardStats();
-                    loadMonthlyChart();
-                    loadTopSellingMealsList();
-                    
-                    // If on orders page, refresh list too
-                    if (currentSection === 'orders') {
-                        renderOrders();
-                    }
-                    if (currentSection === 'ratings') {
-                        renderRatedOrders();
-                    }
+                await refreshOrders();
+                
+                const newOrders = getOrders();
+                const postCheck = { len: newOrders.length, topId: newOrders[0]?.id, topStatus: newOrders[0]?.status };
+
+                // Heuristic: If count or top order changed, definitely update. 
+                // If deep change needed, we do it safely.
+                // For ultimate performance, we assume if top order & count are same, no major "New Order" urgency exists.
+                // But status changes in older orders might be missed. 
+                // Compromise: Full check every 3rd poll, Light check otherwise? 
+                // Let's just do full check but less often (10s).
+                
+                if (JSON.stringify(newOrders) !== JSON.stringify(currentOrders)) {
+                    requestAnimationFrame(() => {
+                        loadDashboardStats();
+                        loadMonthlyChart();
+                        loadTopSellingMealsList();
+                        
+                        if (currentSection === 'orders') renderOrders();
+                        if (currentSection === 'ratings') renderRatedOrders();
+                    });
                 }
             }
-        }, 3000); // 3 seconds refresh
+        }, 10000); // 10 seconds (Balance between realtime and cpu usage)
     }
 }
 

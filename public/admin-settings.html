@@ -76,8 +76,9 @@
                             <div class="input-group-modern">
                                 <label class="input-label">رقم الهاتف</label>
                                 <div class="input-wrapper">
-                                    <span class="input-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg></span>
-                                    <input type="text" id="settingPhone" class="form-input-modern" dir="ltr" style="text-align: right;" placeholder="05XX...">
+                                    <span class="input-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg></span>
+                                    <!-- dir="ltr" ensures the number is formatted 0555... not ...0555 -->
+                                    <input type="tel" id="settingPhone" class="form-input-modern" dir="ltr" style="text-align: left; padding-left: 12px;" placeholder="05XX XX XX XX">
                                 </div>
                             </div>
                         </div>
@@ -128,7 +129,7 @@
                             <label for="dt_distance" class="delivery-opt-label">
                                 <span style="display:flex; align-items:center; justify-content:center; gap:6px;">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                                    حسب المسافة
+                                    غير مذكور (بالاتفاق)
                                 </span>
                             </label>
                             
@@ -152,51 +153,26 @@
                             </div>
                         </div>
 
-                        <!-- Distance Mode -->
+                        <!-- Distance Mode (Unspecified) - Removed Settings -->
                         <div id="distanceCostGroup" class="delivery-mode-group" style="display: none;">
-                            <div class="form-grid-2">
+                            <!-- Settings removed as per request for 'Unspecified' mode -->
+                             <div class="form-grid-2" style="display:none;">
                                 <div class="input-group-modern">
                                     <label class="input-label">سعر الكيلومتر (دج)</label>
                                     <div class="input-wrapper">
-                                        <span class="input-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"></path><path d="M4 20L21 3"></path><path d="M21 16v5h-5"></path><path d="M15 15l5 5"></path><path d="M4 4l5 5"></path></svg></span>
-                                        <input type="number" id="settingCostPerKm" class="form-input-modern" placeholder="مثال: 50">
+                                        <input type="number" id="settingCostPerKm" class="form-input-modern">
                                     </div>
                                 </div>
                                 <div class="input-group-modern">
                                     <label class="input-label">أقصى نطاق (كم)</label>
                                     <div class="input-wrapper">
-                                        <span class="input-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></span>
-                                        <input type="number" id="settingMaxDistance" class="form-input-modern" placeholder="مثال: 20">
+                                        <input type="number" id="settingMaxDistance" class="form-input-modern">
                                     </div>
-                                </div>
-                            </div>
-
-                            <div class="location-section" style="margin-top: 24px;">
-                                <div class="header-with-action" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                                    <label class="input-label">موقع المطعم (GPS)</label>
-                                    <button type="button" onclick="detectRestaurantLocation()" class="btn-secondary" style="padding: 6px 14px; font-size: 0.85rem; border-radius: 20px; display:flex; align-items:center; gap:6px;">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg> 
-                                        تحديد موقعي الحالي
-                                    </button>
-                                </div>
-                                
-                                <div class="form-grid-2">
-                                    <div class="input-group-modern">
-                                        <input type="text" id="settingRestLat" class="form-input-modern" placeholder="خط العرض (Lat)" readonly style="background: #f3f4f6;">
-                                    </div>
-                                    <div class="input-group-modern">
-                                        <input type="text" id="settingRestLng" class="form-input-modern" placeholder="خط الطول (Lng)" readonly style="background: #f3f4f6;">
-                                    </div>
-                                </div>
-
-                                <div class="location-preview-box">
-                                    <span style="opacity: 0.5;">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>
-                                    </span>
-                                    <span class="location-coords" id="coordsDisplay" style="margin-top: 10px;">لم يتم تحديد الموقع بعد</span>
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Location Section Removed -->
                     </div>
 
                     <!-- Security Card -->

@@ -30,11 +30,7 @@ function loadSettings() {
         setValue('settingCostPerKm', settings.delivery.costPerKm);
         setValue('settingMaxDistance', settings.delivery.maxDistance);
         
-        if (settings.location) {
-            setValue('settingRestLat', settings.location.lat);
-            setValue('settingRestLng', settings.location.lng);
-            updateCoordsDisplay(settings.location.lat, settings.location.lng);
-        }
+        /* Location UI Removed */
     }
     
     toggleDeliveryMode();
@@ -59,28 +55,18 @@ function toggleDeliveryMode() {
     const distanceGroup = document.getElementById('distanceCostGroup');
     
     if (fixedGroup) fixedGroup.style.display = (type === 'fixed') ? 'block' : 'none';
-    if (distanceGroup) distanceGroup.style.display = (type === 'distance') ? 'block' : 'none';
+    
+    // Feature 'Distance Calculation' replaced by 'Unspecified', so we hide settings.
+    if (distanceGroup) distanceGroup.style.display = 'none'; 
 }
 
-function updateCoordsDisplay(lat, lng) {
-    const display = document.getElementById('coordsDisplay');
-    if (display) {
-        if (lat && lng) {
-            display.textContent = `${parseFloat(lat).toFixed(4)}, ${parseFloat(lng).toFixed(4)}`;
-            display.style.color = '#10B981';
-            display.style.fontWeight = 'bold';
-        } else {
-            display.textContent = 'لم يتم تحديد الموقع';
-            display.style.color = '#EF4444';
-        }
-    }
-}
+// detectRestaurantLocation Removed
+// updateCoordsDisplay Removed - Logic cleaned from loadSettings below
 
 async function handleSaveSettings() {
     const btn = document.querySelector('.btn-floating-save');
     const originalText = btn ? btn.innerHTML : 'حفظ';
     if (btn) {
-        // Spinner SVG
         btn.innerHTML = `<svg class="animate-spin" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg> جاري الحفظ...`;
         btn.disabled = true;
     }
@@ -101,23 +87,19 @@ async function handleSaveSettings() {
         const selectedType = document.querySelector('input[name="deliveryType"]:checked');
         settings.delivery.type = selectedType ? selectedType.value : 'fixed';
         
-        settings.delivery.fixedCost = parseFloat(document.getElementById('settingFixedCost').value) || 0;
-        settings.delivery.costPerKm = parseFloat(document.getElementById('settingCostPerKm').value) || 0;
-        settings.delivery.maxDistance = parseFloat(document.getElementById('settingMaxDistance').value) || 0;
+        settings.delivery.fixedCost = parseFloat(document.getElementById('settingFixedCost')?.value) || 0;
         
-        // Location
-        const latInput = document.getElementById('settingRestLat').value;
-        const lngInput = document.getElementById('settingRestLng').value;
-
-        if (latInput && lngInput) {
-            settings.location = { 
-                lat: parseFloat(latInput), 
-                lng: parseFloat(lngInput) 
-            };
-        } else {
-            settings.location = null; 
+        // These inputs might be hidden/removed, so we use optional chaining or handle specific cases
+        if (document.getElementById('settingCostPerKm')) {
+            settings.delivery.costPerKm = parseFloat(document.getElementById('settingCostPerKm').value) || 0;
+        }
+        if (document.getElementById('settingMaxDistance')) {
+            settings.delivery.maxDistance = parseFloat(document.getElementById('settingMaxDistance').value) || 0;
         }
 
+        // Location - We preserve existing or set to null if intended, but UI is gone.
+        // We do NOT update settings.location here as the inputs are removed.
+        
         // Save
         if (typeof updateSettingsData === 'function') {
             await updateSettingsData(settings);
@@ -136,42 +118,6 @@ async function handleSaveSettings() {
             btn.innerHTML = originalText;
             btn.disabled = false;
         }
-    }
-}
-
-async function detectRestaurantLocation() {
-    const btn = document.querySelector('button[onclick="detectRestaurantLocation()"]');
-    const originalText = btn ? btn.innerHTML : `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>`;
-    if(btn) { 
-        btn.innerHTML = `<svg class="animate-spin" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg> ...`; 
-        btn.disabled = true; 
-    }
-
-    try {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const lat = position.coords.latitude;
-                    const lng = position.coords.longitude;
-                    
-                    document.getElementById('settingRestLat').value = lat;
-                    document.getElementById('settingRestLng').value = lng;
-                    
-                    updateCoordsDisplay(lat, lng);
-                    showSaveBar(); // Auto show save bar as fields changed
-                    showToast('تم تحديد الموقع بنجاح', 'success');
-                },
-                (error) => {
-                    showToast('تعذر الوصول للموقع: ' + error.message, 'error');
-                }
-            );
-        } else {
-            showToast('المتصفح لا يدعم تحديد الموقع', 'error');
-        }
-    } catch (e) {
-        showToast('حدث خطأ أثناء تحديد الموقع', 'error');
-    } finally {
-        if(btn) { btn.innerHTML = originalText; btn.disabled = false; }
     }
 }
 

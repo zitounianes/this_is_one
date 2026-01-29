@@ -61,25 +61,40 @@ function setupAdminNavigation() {
  * Smart Navigation: Fetch content via AJAX and swap without reload
  */
 /**
- * Smart Navigation: Fetch content via AJAX with Circle Reveal Transition
+ * Smart Navigation: Refined Gradient Ring Transition
+ * A beautiful, light ring spins around the brand name during transition.
  */
 async function spaNavigate(url, pushState = true) {
     if (window.location.pathname.endsWith(url)) return;
 
-    // 1. Create Overlay if missing
-    let overlay = document.querySelector('.circle-transition-overlay');
+    // 1. Get/Create Overlay
+    let overlay = document.querySelector('.transition-overlay');
     if (!overlay) {
         overlay = document.createElement('div');
-        overlay.className = 'circle-transition-overlay';
+        overlay.className = 'transition-overlay';
+        
+        // Get Brand Name
+        const brand = document.querySelector('.sidebar-brand h2') || { innerText: 'مطعمي' };
+        const name = brand.innerText;
+        
+        overlay.innerHTML = `
+            <div class="transition-content">
+                <div class="transition-ring"></div>
+                <div class="transition-text">${name}</div>
+            </div>
+        `;
         document.body.appendChild(overlay);
+    } else {
+        const brand = document.querySelector('.sidebar-brand h2') || { innerText: 'مطعمي' };
+        const textEl = overlay.querySelector('.transition-text');
+        if (textEl) textEl.innerText = brand.innerText;
     }
 
-    // 2. Start Transition (Cover Screen)
-    overlay.classList.remove('exit');
+    // 2. Fade In (Fast & Light)
     overlay.classList.add('active');
 
-    // Wait for half circle animation to cover screen (approx 600ms safety)
-    await new Promise(r => setTimeout(r, 600));
+    // Wait for fade in (300ms) - Feels snappy
+    await new Promise(r => setTimeout(r, 300));
 
     try {
         const response = await fetch(url);
@@ -87,22 +102,15 @@ async function spaNavigate(url, pushState = true) {
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
 
-        // 3. Cleanup old page (intervals, charts)
         cleanupPage();
 
-        // 4. Update Title & State
         document.title = doc.title;
-        if (pushState) {
-            history.pushState({ url }, doc.title, url);
-        }
-
-        // 5. Inject Styles
+        if (pushState) history.pushState({ url }, doc.title, url);
+        
         await injectMissingStyles(doc);
 
-        // 6. Swap Content (Behind the curtain)
         const mainContent = document.querySelector('.main-content');
         const newMainContent = doc.querySelector('.main-content');
-        
         if (newMainContent && mainContent) {
             mainContent.innerHTML = newMainContent.innerHTML;
             window.scrollTo(0, 0);
@@ -111,16 +119,13 @@ async function spaNavigate(url, pushState = true) {
             return;
         }
 
-        // 7. Swap Modals
         document.querySelectorAll('.modal-overlay').forEach(m => m.remove());
         doc.querySelectorAll('.modal-overlay').forEach(m => {
             document.body.appendChild(m);
         });
 
-        // 8. Highlight Sidebar
         highlightSidebar();
 
-        // 9. Re-run Scripts
         const scripts = doc.querySelectorAll('script');
         for (const script of scripts) {
              if (script.src) {
@@ -141,13 +146,11 @@ async function spaNavigate(url, pushState = true) {
         
         document.dispatchEvent(new Event('DOMContentLoaded'));
 
-        // 10. Update UI Elements
         const pageTitle = document.getElementById('pageTitle');
         if (pageTitle && doc.getElementById('pageTitle')) {
             pageTitle.innerText = doc.getElementById('pageTitle').innerText;
         }
 
-        // 11. Close Sidebar
         const sidebar = document.getElementById('sidebar');
         if (sidebar) sidebar.classList.remove('open');
 
@@ -155,17 +158,12 @@ async function spaNavigate(url, pushState = true) {
         console.error('Navigation error:', error);
         window.location.href = url;
     } finally {
-        // 12. Reveal New Page (Uncover)
-        // Give a tiny buffer for DOM to settle, then exit
-        setTimeout(() => {
-            overlay.classList.add('exit');
-            overlay.classList.remove('active');
-            
-            // Cleanup class after animation
+        // 3. Fade Out
+        requestAnimationFrame(() => {
             setTimeout(() => {
-                overlay.classList.remove('exit');
-            }, 600);
-        }, 100);
+                overlay.classList.remove('active');
+            }, 50);
+        });
     }
 }
 
