@@ -107,14 +107,23 @@ function loadDashboardStats() {
 
 function adjustStatFontSizes() {
     document.querySelectorAll('.stat-value[data-fit="true"]').forEach(el => {
-        el.style.fontSize = ''; // Reset
-        let size = 1.8; // Max size (rem)
-        const minSize = 0.8;
+        el.style.fontSize = ''; // Reset to default
+        el.style.whiteSpace = 'nowrap'; // Ensure no wrapping
         
-        // Loop to shrink until it fits
-        while (el.scrollWidth > el.clientWidth && size > minSize) {
-            size -= 0.1;
+        let size = 1.8; // Max size (rem)
+        const minSize = 0.6; // Allow going smaller (approx 9-10px)
+        
+        // Check overflow
+        // We use a slight tolerance (1px) to avoid infinite loops on border cases
+        while ((el.scrollWidth > el.offsetWidth) && size > minSize) {
+            size -= 0.05; // Finer steps
             el.style.fontSize = `${size}rem`;
+        }
+        
+        // If still overflowing at min size, enable ellipsis
+        if (el.scrollWidth > el.offsetWidth) {
+            el.style.textOverflow = 'ellipsis';
+            el.title = el.textContent; // Show full number on hover
         }
     });
 }
